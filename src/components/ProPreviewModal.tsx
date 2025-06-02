@@ -1,10 +1,13 @@
 'use client';
 
+import * as React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { CheckCircle, Zap, Sparkles, Users, BarChart, Clock, Mail, X, Search, Image, Download, Share2, Palette, Crown, Building2, Rocket, DollarSign, Star, Shield, Workflow } from 'lucide-react';
-import { useState, FormEvent } from 'react';
+import { CheckCircle, Zap, Sparkles, Users, BarChart, Clock, Mail, X, Search, Image, Download, Share2, Palette, Crown, Building2, Rocket, DollarSign, Star, Shield, Workflow, Loader2 } from 'lucide-react';
+import { useWaitlist } from '@/hooks/useWaitlist';
+import { getRandomMessage } from '@/lib/utils/funMessages';
+import { toast } from '@/components/ui/use-toast'; // Add this import
 
 const plans = {
   pro: {
@@ -91,25 +94,137 @@ interface ProPreviewModalProps {
 }
 
 export function ProPreviewModal({ open, onOpenChange }: ProPreviewModalProps) {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'pro' | 'agency'>('pro');
-  const [interestedIn, setInterestedIn] = useState<'creator' | 'professional' | 'agency'>('creator');
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Here you would typically send the email to your backend
-    console.log('Email submitted:', email, 'Plan:', selectedPlan, 'Interest:', interestedIn);
-    setSubmitted(true);
-    // Reset form after 3 seconds
-    setTimeout(() => {
-      setEmail('');
-      setSubmitted(false);
-      onOpenChange(false);
-    }, 3000);
+  const [selectedPlan, setSelectedPlan] = React.useState<'pro' | 'agency'>('pro');
+  const [interestedIn, setInterestedIn] = React.useState<'creator' | 'professional' | 'agency'>('creator');
+  
+  const [isTouched, setIsTouched] = React.useState(false);
+  const [isValidEmail, setIsValidEmail] = React.useState(true);
+  
+  const { 
+    email, 
+    setEmail,
+    isLoading, 
+    isSubscribed, 
+    waitlistStatus,
+    subscribeToWaitlist,
+    checkStatus 
+  } = useWaitlist();
+  
+  // Validate email format
+  const validateEmail = (email: string): boolean => {
+    if (!email) return false;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email.trim());
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmail(value);
+    
+    // Only validate if the field has been touched or if there's a value
+    if (isTouched || value) {
+      setIsValidEmail(validateEmail(value));
+    }
+  };
+  
+  const handleBlur = () => {
+    setIsTouched(true);
+    if (email) {
+      const trimmedEmail = email.trim();
+      const isValid = validateEmail(trimmedEmail);
+      setIsValidEmail(isValid);
+      
+      // Update the email in the input field to trim any whitespace
+      if (trimmedEmail !== email) {
+        setEmail(trimmedEmail);
+      }
+    }
+  };
+  
+  // Simplified validation function for the form
+  const isFormValid = (): boolean => {
+    return email.length > 0 && validateEmail(email);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Trim the email and update state if needed
+    const trimmedEmail = email.trim();
+    if (trimmedEmail !== email) {
+      setEmail(trimmedEmail);
+    }
+    
+    // Validate email before submitting
+    if (!trimmedEmail) {
+      const emptyEmailMessage = getRandomMessage('waitlist', 'invalidEmail');
+      toast({
+        title: emptyEmailMessage.message,
+        description: 'Please enter your email address',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    const isValid = validateEmail(trimmedEmail);
+    if (!isValid) {
+      const invalidEmailMessage = getRandomMessage('waitlist', 'invalidEmail');
+      toast({
+        title: invalidEmailMessage.message,
+        description: invalidEmailMessage.description,
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    try {
+      // Subscribe with the selected plan and interest
+      await subscribeToWaitlist(e, selectedPlan as 'pro' | 'agency');
+      
+      // Check the status after subscribing
+      const status = await checkStatus(trimmedEmail);
+      
+      if (status?.exists) {
+        const successMessage = getRandomMessage('waitlist', 'success');
+        toast({
+          title: successMessage.message,
+          description: successMessage.description,
+        });
+      }
+    } catch (error) {
+      console.error('Error adding to waitlist:', error);
+      
+      let messageType = 'error';
+      if (error instanceof Error) {
+        if (error.message.includes('already') || error.message.includes('exists')) {
+          messageType = 'alreadyExists';
+        }
+      }
+      
+      const errorMessage = getRandomMessage('waitlist', messageType);
+      
+      toast({
+        title: errorMessage.message,
+        description: errorMessage.description,
+        variant: messageType === 'error' ? 'destructive' : 'default',
+      });
+    }
+  };
+
+  // Check if the current email is already on the waitlist when it changes
+  React.useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (email && email.includes('@')) {
+        await checkStatus(email);
+      }
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [email, checkStatus]);
+
   const currentPlan = plans[selectedPlan];
+
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -258,13 +373,23 @@ export function ProPreviewModal({ open, onOpenChange }: ProPreviewModalProps) {
             <div className="bg-card border border-border rounded-lg p-6">
               <h3 className="text-lg font-semibold mb-4">Get Early Access</h3>
               
-              {submitted ? (
+              {isSubscribed || waitlistStatus?.exists ? (
                 <div className="text-center py-8">
                   <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                  <h4 className="font-medium text-foreground">You're on the list!</h4>
+                  <h4 className="font-medium text-foreground">
+                    {waitlistStatus?.interest === 'agency' ? 'Welcome, Agency Partner! ' : 'You\'re on the list! '}
+                    🎉
+                  </h4>
                   <p className="text-sm text-muted-foreground mt-1">
-                    We'll notify you when {currentPlan.name} launches.
+                    {waitlistStatus?.plan === 'agency' 
+                      ? 'Our team will contact you soon to discuss agency options.'
+                      : `We'll notify you when ${currentPlan.name} launches.`}
                   </p>
+                  {waitlistStatus?.subscribedAt && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Joined on {new Date(waitlistStatus.subscribedAt).toLocaleDateString()}
+                    </p>
+                  )}
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -274,15 +399,23 @@ export function ProPreviewModal({ open, onOpenChange }: ProPreviewModalProps) {
                     </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="your@email.com"
-                        className="pl-10"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
+                      <div className="w-full">
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={email}
+                          onChange={handleEmailChange}
+                          onBlur={handleBlur}
+                          className={`w-full px-4 py-6 text-base ${!isValidEmail && isTouched ? 'border-red-500' : ''}`}
+                          required
+                        />
+                        {!isValidEmail && isTouched && (
+                          <p className="mt-1 text-sm text-red-500">
+                            Please enter a valid email address
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
@@ -295,9 +428,22 @@ export function ProPreviewModal({ open, onOpenChange }: ProPreviewModalProps) {
                     </ul>
                   </div>
 
-                  <Button type="submit" className="w-full">
-                    <Zap className="mr-2 h-4 w-4" />
-                    Join Waitlist for {currentPlan.name}
+                  <Button 
+                    type="submit" 
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Joining...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="mr-2 h-4 w-4" />
+                        Join Waitlist for {currentPlan.name}
+                      </>
+                    )}
                   </Button>
                   
                   <p className="text-xs text-muted-foreground text-center">

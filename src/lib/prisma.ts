@@ -36,6 +36,43 @@ type PrismaClientWithCustomModels = PrismaClient & {
     findMany: (args?: any) => Promise<any[]>;
     count: (args?: any) => Promise<number>;
   };
+  waitlist: {
+    findUnique: (args: { where: { email: string } }) => Promise<{
+      id: string;
+      email: string;
+      plan: string;
+      interest: string;
+      subscribedAt: Date;
+      createdAt: Date;
+      updatedAt: Date;
+    } | null>;
+    create: (args: { 
+      data: { 
+        email: string; 
+        plan: string;
+        interest: string;
+        subscribedAt: Date;
+      } 
+    }) => Promise<{ 
+      id: string; 
+      email: string; 
+      plan: string;
+      interest: string;
+      subscribedAt: Date;
+      createdAt: Date;
+      updatedAt: Date;
+    }>;
+    findMany: (args?: any) => Promise<Array<{
+      id: string; 
+      email: string; 
+      plan: string;
+      interest: string;
+      subscribedAt: Date;
+      createdAt: Date;
+      updatedAt: Date;
+    }>>;
+    count: (args?: any) => Promise<number>;
+  };
 };
 
 // Create a singleton Prisma client instance

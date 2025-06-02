@@ -88,3 +88,15 @@ model TemplateUsage {
   @@index([timestamp])
   @@map("template_usage")
 }
+
+model Waitlist {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  plan         String   @default("pro")  // 'pro' or 'agency'
+  interest     String   @default("creator")  // 'creator', 'professional', or 'agency'
+  subscribedAt DateTime @map("subscribed_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
+  @@map("waitlist")
+}

@@ -4,8 +4,10 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { fadeIn, staggerContainer } from '@/lib/animation';
-import { useState } from 'react';
-import { ToolSelector } from '@/components/ToolSelector';
+import { ToolSelector } from './ToolSelector';
+import { ProPreviewModal } from './ProPreviewModal';
+import { useState, useEffect } from 'react';
+import { Zap } from 'lucide-react'; // Only Zap is needed now
 
 interface HeroProps {
   onGetStarted: () => void;
@@ -13,6 +15,25 @@ interface HeroProps {
 
 export function Hero({ onGetStarted }: HeroProps) {
   const [isToolSelectorOpen, setIsToolSelectorOpen] = useState(false);
+  const [isProModalOpen, setIsProModalOpen] = useState(false);
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+  
+  useEffect(() => {
+    // Fetch waitlist count from your API
+    const fetchWaitlistCount = async () => {
+      try {
+        const response = await fetch('/api/waitlist/count');
+        if (response.ok) {
+          const data = await response.json();
+          setWaitlistCount(data.count);
+        }
+      } catch (error) {
+        console.error('Error fetching waitlist count:', error);
+      }
+    };
+    
+    fetchWaitlistCount();
+  }, []);
 
   return (
     <section className="relative overflow-hidden">
@@ -52,21 +73,31 @@ export function Hero({ onGetStarted }: HeroProps) {
             <Button 
               variant="outline" 
               size="lg" 
-              className="text-base"
-              onClick={() => {
-                const element = document.getElementById('features');
-                element?.scrollIntoView({ behavior: 'smooth' });
-              }}
+              className="text-base flex items-center" // Added flex items-center for icon alignment
+              onClick={() => setIsProModalOpen(true)}
             >
-              Discover Features
+              <Zap className="mr-2 h-5 w-5" />
+              Join the Waitlist
             </Button>
           </motion.div>
+          
+          <motion.p 
+            className="text-sm text-muted-foreground mt-4"
+            variants={fadeIn('up')} // Added fadeIn animation for consistency
+          >
+            Join **{waitlistCount?.toLocaleString() || 'thousands'}** enthusiastic creators already on the waitlist for early access!
+          </motion.p>
         </motion.div>
       </div>
 
       <ToolSelector 
         open={isToolSelectorOpen} 
         onOpenChange={setIsToolSelectorOpen} 
+      />
+      
+      <ProPreviewModal 
+        open={isProModalOpen} 
+        onOpenChange={setIsProModalOpen} 
       />
     </section>
   );
