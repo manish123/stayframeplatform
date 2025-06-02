@@ -54,6 +54,15 @@ export const lato = Lato({
   display: 'swap',
 });
 
+export function generateViewport() {
+  return {
+    themeColor: [
+      { media: '(prefers-color-scheme: light)', color: 'white' },
+      { media: '(prefers-color-scheme: dark)', color: 'black' },
+    ],
+  };
+}
+
 // Combine font variables
 const fontVariables = [
   inter.variable,
@@ -69,10 +78,6 @@ export const metadata: Metadata = {
   title: 'StayFrame - Create Stunning Content',
   description: 'Transform your ideas into viral content with our AI-powered tools',
   keywords: ['meme creator', 'quote maker', 'content creation', 'social media tools'],
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
   icons: {
     icon: [
       {

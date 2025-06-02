@@ -1,14 +1,10 @@
-import type { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { Toaster } from 'sonner';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 
-export const metadata: Metadata = {
-  title: 'Reel Generator | StayFrame',
-  description: 'Create and customize your own video reels with ease.',
-};
+export { metadata, generateViewport } from './metadata';
 
 export default function ReelLayout({ children }: { children: React.ReactNode }) {
   return (

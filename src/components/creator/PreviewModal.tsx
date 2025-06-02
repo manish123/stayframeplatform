@@ -7,7 +7,6 @@ import { X, Download, Copy, Loader2, Minus, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
-import { processVideo } from '@/lib/services/videoProcessor';
 import { cn } from '@/lib/utils';
 import { useTemplateStore } from '@/store/templateStore';
 import CanvasDisplay from './CanvasDisplay';
@@ -156,6 +155,15 @@ export const PreviewModal = ({
   const handleExport = async (exportFormat: 'png' | 'jpeg' | 'webp' | 'mp4' = 'png') => {
     console.log('Export requested, format:', exportFormat);
     
+    if (exportFormat === 'mp4' || type === 'video') {
+      toast({
+        title: 'Video export disabled',
+        description: 'Video export functionality is currently disabled. Please export as an image instead.',
+        variant: 'default',
+      });
+      return;
+    }
+    
     if (isExporting) {
       console.warn('Export already in progress');
       toast({
@@ -188,61 +196,23 @@ export const PreviewModal = ({
       
       console.log('Exporting canvas with dimensions:', canvas.width, 'x', canvas.height);
       
-      if (exportFormat === 'mp4' && type === 'video') {
-        // Video export logic
-        const stream = canvas.captureStream(30);
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: 'video/webm;codecs=vp9',
-          videoBitsPerSecond: 2500000,
-        });
-
-        const chunks: BlobPart[] = [];
-        mediaRecorder.ondataavailable = (e) => e.data.size > 0 && chunks.push(e.data);
-
-        await new Promise<void>((resolve, reject) => {
-          mediaRecorder.onstop = async () => {
-            try {
-              const blob = new Blob(chunks, { type: 'video/webm' });
-              const url = URL.createObjectURL(blob);
-              
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `export-${Date.now()}.webm`;
-              a.click();
-              
-              URL.revokeObjectURL(url);
-              resolve();
-            } catch (error) {
-              reject(error);
-            }
-          };
-
-          mediaRecorder.start();
-          setTimeout(() => {
-            if (mediaRecorder.state !== 'inactive') {
-              mediaRecorder.stop();
-            }
-          }, 5000);
-        });
-      } else {
-        // Direct canvas export with quality settings for different formats
-        let quality = 0.95;
-        let mimeType = `image/${exportFormat}`;
-        
-        // Adjust quality based on format for optimal file size
-        if (exportFormat === 'jpeg') {
-          quality = 0.9; // JPEG can be more compressed
-          mimeType = 'image/jpeg';
-        } else if (exportFormat === 'webp') {
-          quality = 0.85; // WebP offers better compression
-        }
-        
-        const dataUrl = canvas.toDataURL(mimeType, quality);
-        const a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = `export-${Date.now()}.${exportFormat}`;
-        a.click();
+      // Only handle image exports
+      let quality = 0.95;
+      let mimeType = `image/${exportFormat}`;
+      
+      // Adjust quality based on format for optimal file size
+      if (exportFormat === 'jpeg') {
+        quality = 0.9; // JPEG can be more compressed
+        mimeType = 'image/jpeg';
+      } else if (exportFormat === 'webp') {
+        quality = 0.85; // WebP offers better compression
       }
+      
+      const dataUrl = canvas.toDataURL(mimeType, quality);
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = `export-${Date.now()}.${exportFormat}`;
+      a.click();
       
       toast({
         title: 'Export successful',
@@ -460,7 +430,7 @@ export const PreviewModal = ({
               ) : (
                 <Download className="h-4 w-4" />
               )}
-              {type === 'video' ? 'Download Video' : 'Download Image'}
+              Download Image
             </Button>
           </div>
         </div>
