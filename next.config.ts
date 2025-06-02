@@ -10,8 +10,20 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Remove the webpack property as it's not needed
-  // Remove the experimental.turbopack as it's causing warnings
+  experimental: {
+    // This is needed for route groups to work properly
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
+  // Enable React's experimental compiler
+  compiler: {
+    reactRemoveProperties: false,
+  },
+  // Configure page extensions
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  // Disable static optimization for all pages
+  output: 'standalone',
 };
 
 export default nextConfig;
