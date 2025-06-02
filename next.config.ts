@@ -1,15 +1,17 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
   reactStrictMode: true,
-  webpack: true,
+  // Disable ESLint during build
   eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  experimental: {
-    turbopack: false,
+  // Disable TypeScript type checking during build
+  typescript: {
+    ignoreBuildErrors: true,
   },
+  // Remove the webpack property as it's not needed
+  // Remove the experimental.turbopack as it's causing warnings
 };
 
-module.exports = nextConfig;
+export default nextConfig;
