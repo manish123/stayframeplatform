@@ -112,7 +112,7 @@ export function CookieConsent() {
               <p className="text-sm text-muted-foreground">
                 We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. 
                 By clicking "Accept All", you consent to our use of cookies. 
-                <a href="/cookies" className="text-primary hover:underline ml-1">Cookie Policy</a>
+                <a href="/marketing/cookies" className="text-primary hover:underline ml-1">Cookie Policy</a>
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
@@ -145,7 +145,7 @@ export function CookieConsent() {
             <DialogTitle>Cookie Preferences</DialogTitle>
             <DialogDescription>
               Manage your cookie preferences. You can change these settings at any time by visiting our 
-              <a href="/cookies" className="text-primary hover:underline"> Cookie Policy</a>.
+              <a href="/marketing/cookies" className="text-primary hover:underline"> Cookie Policy</a>.
             </DialogDescription>
           </DialogHeader>
           

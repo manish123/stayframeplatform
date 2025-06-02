@@ -123,7 +123,7 @@ export default function AboutPage() {
               <Link href="/pricing">Discover Plans</Link>
             </Button>
             <Button variant="outline" size="lg" className="bg-transparent border-white/20 hover:bg-white/10" asChild>
-              <Link href="/contact">Let's Connect</Link>
+              <Link href="/marketing/contact">Let's Connect</Link>
             </Button>
           </div>
         </div>

@@ -18,17 +18,17 @@ const footerLinks = [
   {
     title: 'Company',
     items: [
-      { name: 'About', href: '/about' },
+      { name: 'About', href: '/marketing/about' },
       { name: 'Blog', href: '/blog' },
-      { name: 'Contact', href: '/contact' },
+      { name: 'Contact', href: '/marketing/contact' },
     ],
   },
   {
     title: 'Legal',
     items: [
-      { name: 'Privacy', href: '/privacy' },
-      { name: 'Terms', href: '/terms' },
-      { name: 'Cookies', href: '/cookies' },
+      { name: 'Privacy', href: '/marketing/privacy' },
+      { name: 'Terms', href: '/marketing/terms' },
+      { name: 'Cookies', href: '/marketing/cookies' },
     ],
   },
 ];

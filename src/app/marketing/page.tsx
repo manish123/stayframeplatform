@@ -21,7 +21,7 @@ export default function HomePage() {
             <Link href="/create">Get Started</Link>
           </Button>
           <Button variant="outline" size="lg" asChild>
-            <Link href="/about">Learn More</Link>
+            <Link href="/marketing/about">Learn More</Link>
           </Button>
         </div>
       </div>
