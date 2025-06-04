@@ -34,9 +34,12 @@ const CanvasDisplay = dynamic(
   { ssr: false, loading: () => <div className="flex items-center justify-center h-full">Loading canvas...</div> }
 );
 
-const ElementInspector = dynamic(
-  () => import('@/components/creator/ElementInspector').then(mod => mod.default),
-  { ssr: false, loading: () => <div>Loading inspector...</div> }
+const ElementInspector = dynamic<{ hideCloseButton?: boolean }>(
+  () => import('@/components/creator/ElementInspector').then(mod => mod.default || mod),
+  { 
+    ssr: false, 
+    loading: () => <div>Loading inspector...</div> 
+  }
 );
 
 const PreviewModal = dynamic(
@@ -50,6 +53,21 @@ interface ThemeSelectorProps {
   className?: string;
   value: string;
   defaultTheme?: string;
+  hideCloseButton?: boolean;
+}
+
+interface ImageSearchProps {
+  onImageSelect: (url: string) => void;
+  supportsImages: boolean;
+  hideCloseButton?: boolean;
+  className?: string;
+}
+
+interface QuoteSearchProps {
+  theme?: string;
+  onQuoteSelect: (quote: FlattenedQuote) => void;
+  className?: string;
+  hideCloseButton?: boolean;
 }
 
 const ThemeSelector = dynamic<ThemeSelectorProps>(
@@ -69,21 +87,21 @@ const ThemeSelector = dynamic<ThemeSelectorProps>(
     loading: () => <div>Loading themes...</div> 
   }
 );
-const ImageSearch = dynamic<{
-  onImageSelect: (url: string) => void;
-  supportsImages: boolean;
-}>(
+
+const ImageSearch = dynamic<ImageSearchProps>(
   () => import('@/components/quote/ImageSearch').then(mod => mod.ImageSearch),
-  { ssr: false, loading: () => <div>Loading image search...</div> }
+  { 
+    ssr: false, 
+    loading: () => <div>Loading image search...</div> 
+  }
 );
 
-const QuoteSearch = dynamic<{
-  theme?: string;
-  onQuoteSelect: (quote: FlattenedQuote) => void;
-  className?: string;
-}>(
+const QuoteSearch = dynamic<QuoteSearchProps>(
   () => import('@/components/quote/QuoteSearch').then(mod => mod.QuoteSearch),
-  { ssr: false, loading: () => <div>Loading quotes...</div> }
+  { 
+    ssr: false, 
+    loading: () => <div>Loading quotes...</div> 
+  }
 );
 
 const tools = [
@@ -204,7 +222,7 @@ export default function QuoteGeneratorSidebar() {
                     "border-2 rounded-lg p-3 text-center cursor-pointer transition-colors",
                     selectedTemplate?.id === template.id 
                       ? "border-blue-400 bg-blue-50" 
-                      : "border-gray-200 hover:border-blue-400"
+                      : "border-gray-200 hover:bg-blue-400"
                   )}
                   onClick={() => handleTemplateSelect(template)}
                 >
@@ -235,11 +253,13 @@ export default function QuoteGeneratorSidebar() {
               className="w-full"
               value={selectedTheme}
               defaultTheme="inspiration"
+              hideCloseButton={true}
             />
             <QuoteSearch 
               theme={selectedTheme}
               onQuoteSelect={handleQuoteSelect}
               className="mt-4"
+              hideCloseButton={true}
             />
           </div>
         );
@@ -249,11 +269,12 @@ export default function QuoteGeneratorSidebar() {
             <ImageSearch 
               onImageSelect={handleImageSelect}
               supportsImages={selectedTemplate?.supportedFeatures?.supportsImages ?? false}
+              hideCloseButton={true}
             />
           </div>
         );
       case 'edit':
-        return <ElementInspector />;
+        return <ElementInspector hideCloseButton={true} />;
       default:
         return null;
     }
@@ -271,7 +292,7 @@ export default function QuoteGeneratorSidebar() {
             <Menu className="h-6 w-6" />
           </button>
           <h1 className="text-lg font-semibold">Quote Generator</h1>
-          <div className="flex space-x-2">
+          <div className="flex items-center space-x-2">
             <button 
               onClick={toggleInspector}
               className={`p-2 rounded-md ${showInspector ? 'bg-gray-100' : 'hover:bg-gray-100'}`}
@@ -294,18 +315,13 @@ export default function QuoteGeneratorSidebar() {
         className={cn(
           'fixed inset-y-0 left-0 z-40 w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out',
           'lg:translate-x-0',
-          isMobileLeftOpen ? 'translate-x-0' : '-translate-x-full'
+          isMobileLeftOpen ? 'translate-x-0' : '-translate-x-full',
+          'flex flex-col h-screen'
         )}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          <h1 className="font-bold text-xl text-gray-800">Quote Generator</h1>
-          <button 
-            onClick={toggleMobileLeft}
-            className="p-2 hover:bg-gray-100 rounded-lg lg:hidden"
-          >
-            <X size={20} />
-          </button>
+        <div className="p-4 border-b border-gray-200">
+          <h1 className="font-bold text-xl text-gray-800">Design Tools</h1>
         </div>
 
         {/* Tool Navigation */}
@@ -427,32 +443,28 @@ export default function QuoteGeneratorSidebar() {
       </div>
 
       {/* Right Sidebar - Inspector */}
-      {showInspector && (
-        <div className={cn(
-          'bg-white border-l border-gray-200 w-80 flex flex-col',
-          'md:relative fixed inset-y-0 right-0 z-30',
-          isMobileRightOpen ? 'w-full md:w-80' : 'w-0'
-        )}>
-          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="font-semibold">Element Inspector</h3>
-            <button 
-              onClick={toggleInspector}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <X size={20} />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4">
-            {selectedElement ? (
-              <ElementInspector />
-            ) : (
-              <p className="text-sm text-gray-500 text-center py-8">
-                Select an element to inspect its properties
-              </p>
-            )}
-          </div>
+      <div className={cn(
+        'bg-white border-l border-gray-200 w-80 flex flex-col',
+        'fixed inset-y-0 right-0 z-30',
+        'transition-transform duration-300 ease-in-out',
+        'transform',
+        showInspector ? 'translate-x-0' : 'translate-x-full',
+        'h-screen',
+        'overflow-y-auto'  
+      )}>
+        <div className="p-4 border-b border-gray-200">
+          <h3 className="font-semibold">Element Inspector</h3>
         </div>
-      )}
+        <div className="flex-1 p-4">
+          {selectedElement ? (
+            <ElementInspector />
+          ) : (
+            <p className="text-sm text-gray-500 text-center py-8">
+              Select an element to inspect its properties
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* Preview Modal */}
       {selectedTemplate && (

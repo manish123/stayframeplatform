@@ -7,11 +7,12 @@ import { Type, Image as ImageIcon, Video, Droplet, Text, Bold, Italic, AlignLeft
 import { Button } from '@/components/ui/Button';
 import { FontSelector } from '@/components/ui/FontSelector';
 
-export default function ElementInspector() {
-  const selectedElement = useTemplateStore((state) => state.selectedElement);
+interface ElementInspectorProps {
+}
+
+export default function ElementInspector({}: ElementInspectorProps) {
+  const { selectedElement, setSelectedElement, updateElementProperty } = useTemplateStore();
   const isDevelopmentProModeActive = useTemplateStore((state) => state.isDevelopmentProModeActive);
-  const updateElementProperty = useTemplateStore((state) => state.updateElementProperty);
-  const setSelectedElement = useTemplateStore((state) => state.setSelectedElement);
 
   if (!selectedElement) {
     return (
@@ -317,27 +318,16 @@ export default function ElementInspector() {
 
   return (
     <div className="p-3 space-y-4 h-full flex flex-col overflow-y-auto">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium flex items-center gap-2">
-          {selectedElement.type === 'text' && <Type className="h-4 w-4" />}
-          {selectedElement.type === 'image' && <ImageIcon className="h-4 w-4" />}
-          {selectedElement.type === 'video' && <Video className="h-4 w-4" />}
-          {selectedElement.type === 'watermark' && <Droplet className="h-4 w-4" />}
-          <span className="truncate">{selectedElement.name}</span>
-          {isFreeWatermark && <Lock className="h-3 w-3 text-muted-foreground" />}
-        </h3>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 w-6 p-0"
-          onClick={() => setSelectedElement(null)}
-        >
-          <X className="h-3.5 w-3.5" />
-        </Button>
-      </div>
-
+      <h3 className="text-sm font-medium flex items-center gap-2">
+        {selectedElement?.type === 'text' && <Type className="h-4 w-4" />}
+        {selectedElement?.type === 'image' && <ImageIcon className="h-4 w-4" />}
+        {selectedElement?.type === 'video' && <Video className="h-4 w-4" />}
+        {selectedElement?.type === 'watermark' && <Droplet className="h-4 w-4" />}
+        <span className="truncate">{selectedElement?.name || 'Element'}</span>
+      </h3>
+      
       {isFreeWatermark && renderWatermarkNotice()}
-
+      
       <div className="flex-1 space-y-4">
         {selectedElement.type === 'text' && renderTextControls()}
         {selectedElement.type === 'image' && renderImageControls()}

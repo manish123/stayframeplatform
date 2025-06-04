@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,37 +8,37 @@ datasource db {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token          String? @db.Text
-  session_state      String?
-  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
 }
 
 model User {
-  id                String    @id @default(cuid())
-  name              String?
-  email             String?   @unique
-  emailVerified     DateTime? @map("email_verified")
-  image             String?
-  role              String?   @default("user")
-  accounts          Account[]
-  sessions          Session[]
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  emailVerified DateTime?     @map("email_verified")
+  image         String?
+  role          String?       @default("user")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  accounts      Account[]
+  feedbacks     Feedback[]
+  progressLogs  ProgressLog[]
+  sessions      Session[]
 
   @@map("users")
 }
@@ -52,7 +49,6 @@ model Session {
   userId       String   @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
 
   @@map("sessions")
 }
@@ -72,17 +68,17 @@ model PlatformStats {
   memes     Int      @default(0)
   videos    Int      @default(0)
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   @@map("platform_stats")
 }
 
 model TemplateUsage {
   id           String   @id @default(cuid())
-  type         String   // 'quote', 'meme', 'video'
+  type         String
   templateId   String   @map("template_id")
   templateName String   @map("template_name")
   timestamp    DateTime @default(now())
-  
+
   @@index([type])
   @@index([templateId])
   @@index([timestamp])
@@ -92,11 +88,48 @@ model TemplateUsage {
 model Waitlist {
   id           String   @id @default(cuid())
   email        String   @unique
-  plan         String   @default("pro")  // 'pro' or 'agency'
-  interest     String   @default("creator")  // 'creator', 'professional', or 'agency'
-  subscribedAt DateTime @map("subscribed_at")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
-  
+  interest     String   @default("creator")
+  plan         String   @default("pro")
+  subscribedAt DateTime @map("subscribed_at")
+
   @@map("waitlist")
+}
+
+model Feedback {
+  id           Int           @id @default(autoincrement())
+  type         String
+  title        String
+  description  String
+  priority     String
+  status       String        @default("Open")
+  screenshot   String?
+  metadata     Json?
+  userId       String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  user         User?         @relation(fields: [userId], references: [id])
+  progressLogs ProgressLog[]
+
+  @@index([status])
+  @@index([type])
+  @@index([priority])
+  @@index([userId])
+  @@map("feedbacks")
+}
+
+model ProgressLog {
+  id         Int      @id @default(autoincrement())
+  feedbackId Int
+  noteType   String
+  comment    String
+  createdBy  String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User?    @relation(fields: [createdBy], references: [id])
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  @@index([feedbackId])
+  @@index([createdBy])
+  @@map("progress_logs")
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Button } from '@/components/ui/Button';
@@ -13,6 +13,7 @@ interface ImageSelectionModalProps {
   onClose: () => void;
   onSelect: (imageUrl: string) => void;
   searchTerm?: string;
+  initialSearch?: string;
   supportsImages?: boolean;
 }
 
@@ -23,6 +24,7 @@ export function ImageSelectionModal({
   onClose,
   onSelect,
   searchTerm = '',
+  initialSearch = '',
   supportsImages = true,
 }: ImageSelectionModalProps) {
   const [searchQuery, setSearchQuery] = useState(searchTerm);
@@ -35,6 +37,19 @@ export function ImageSelectionModal({
   const [images, setImages] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [hasInitialSearch, setHasInitialSearch] = useState(false);
+
+  // Handle initial search when modal opens with an initialSearch term
+  useEffect(() => {
+    if (isOpen && initialSearch && !hasInitialSearch) {
+      setSearchQuery(initialSearch);
+      setActiveTab('unsplash');
+      searchImages(initialSearch);
+      setHasInitialSearch(true);
+    } else if (!isOpen) {
+      setHasInitialSearch(false);
+    }
+  }, [isOpen, initialSearch, hasInitialSearch]);
 
   // Tab navigation
   const tabs: { id: ImageSource; label: string; icon: React.ReactNode }[] = [
@@ -76,14 +91,21 @@ export function ImageSelectionModal({
     }
   };
 
+  // Handle search button click
+  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    searchImages();
+  };
+
   // Search for images (mock implementation - replace with actual API call)
-  const searchImages = async () => {
-    if (!searchQuery.trim()) return;
+  const searchImages = async (query?: string) => {
+    const searchTerm = query || searchQuery;
+    if (!searchTerm.trim()) return;
     
     setIsLoading(true);
     try {
       // Replace with actual API call to Unsplash or your image service
-      const response = await fetch(`/api/v1/images?query=${encodeURIComponent(searchQuery)}&page=1`);
+      const response = await fetch(`/api/v1/images?query=${encodeURIComponent(searchTerm)}&page=1`);
       const data = await response.json();
       setImages(data.results || []);
       setPage(1);
@@ -173,7 +195,7 @@ export function ImageSelectionModal({
                   />
                   <Button 
                     className="absolute right-2 top-1/2 -translate-y-1/2 h-8 px-4" 
-                    onClick={searchImages}
+                    onClick={handleSearchClick}
                     disabled={isLoading || !searchQuery.trim()}
                   >
                     {isLoading ? 'Searching...' : 'Search'}

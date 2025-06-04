@@ -48,12 +48,27 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // Check if the email matches the admin criteria
+      if (user.email === 'msk.analyst@gmail.com' || user.email?.startsWith('vinay')) {
+        // Set the user role to admin
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { role: 'admin' }
+        });
+      } else {
+        // Set default role for other users
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { role: 'user' }
+        });
+      }
+      return true;
+    },
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        if ('role' in user) {
-          session.user.role = user.role as string;
-        }
+        session.user.role = user.role || 'user';
       }
       return session;
     },

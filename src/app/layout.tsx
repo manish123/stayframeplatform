@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter, Montserrat, Poppins, Roboto, Playfair_Display, Oswald, Lato } from 'next/font/google';
-import { ThemeProvider } from '@/components/providers/theme-provider';
-import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
-import { SessionProvider } from 'next-auth/react';
 import { auth } from '@/auth';
+import { Providers } from '@/components/Providers';
 import './globals.css';
 
 // Load Inter font (default)
@@ -121,19 +119,11 @@ export default async function RootLayout({
         'min-h-screen bg-background font-sans antialiased',
         inter.className
       )}>
-        <SessionProvider session={session}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <div className="relative flex min-h-screen flex-col">
-              {children}
-              <Toaster />
-            </div>
-          </ThemeProvider>
-        </SessionProvider>
+        <Providers session={session}>
+          <div className="relative flex min-h-screen flex-col">
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );
