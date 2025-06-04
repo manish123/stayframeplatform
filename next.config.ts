@@ -24,6 +24,24 @@ const nextConfig: NextConfig = {
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   // Disable static optimization for all pages
   output: 'standalone',
+  // Configure image optimization
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'pb7i6jljvjqbdgtm.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Add other domains as needed
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

@@ -5,48 +5,18 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import Button from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
-import { Spinner, Google, GitHub } from '@/components/ui/Icons';
+import { Spinner, Google } from '@/components/ui/Icons';
 import { useToast } from '@/components/ui/use-toast';
-import Link from 'next/link';
-
-type AuthMode = 'login' | 'signup';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [authMode, setAuthMode] = useState<AuthMode>('login');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { status } = useSession();
   const callbackUrl = searchParams?.get('callbackUrl') || '/';
-  const mode = searchParams?.get('mode');
   const error = searchParams?.get('error');
-
-  // Type the event handlers properly
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  // Set initial auth mode based on URL parameter
-  useEffect(() => {
-    if (mode === 'signup') {
-      setAuthMode('signup');
-    }
-  }, [mode]);
 
   // Show error toast if there's an error
   useEffect(() => {
@@ -69,43 +39,15 @@ export default function LoginPage() {
     }
   }, [status, callbackUrl, router]);
 
-  const toggleAuthMode = () => {
-    setAuthMode(prev => prev === 'login' ? 'signup' : 'login');
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // In a real app, you would handle email/password auth here
-      // For now, we'll just show a message
-      toast({
-        title: 'Email/Password Auth Coming Soon',
-        description: 'Please use a social provider to sign in.',
-        variant: 'default',
-      });
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Authentication error:', error);
-      toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive',
-      });
-      setIsLoading(false);
-    }
-  };
-
-  const handleSocialSignIn = async (provider: 'google' | 'github') => {
+  const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      await signIn(provider, { callbackUrl });
+      await signIn('google', { callbackUrl });
     } catch (error) {
-      console.error(`${provider} sign in error:`, error);
+      console.error('Google sign in error:', error);
       toast({
         title: 'Error',
-        description: `Failed to sign in with ${provider}. Please try again.`,
+        description: 'Failed to sign in with Google. Please try again.',
         variant: 'destructive',
       });
       setIsLoading(false);
@@ -128,12 +70,10 @@ export default function LoginPage() {
           <Card className="p-8">
             <div className="flex flex-col space-y-2 text-center mb-8">
               <h1 className="text-2xl font-semibold tracking-tight">
-                {authMode === 'login' ? 'Welcome back' : 'Create an account'}
+                Welcome
               </h1>
               <p className="text-sm text-muted-foreground">
-                {authMode === 'login' 
-                  ? 'Enter your email to sign in to your account' 
-                  : 'Enter your details to create a new account'}
+                Sign in to your account using Google
               </p>
             </div>
 
@@ -142,7 +82,7 @@ export default function LoginPage() {
                 variant="outline" 
                 type="button" 
                 disabled={isLoading}
-                onClick={() => handleSocialSignIn('google')}
+                onClick={handleGoogleSignIn}
                 className="w-full"
               >
                 {isLoading ? (
@@ -152,117 +92,8 @@ export default function LoginPage() {
                 )}
                 Continue with Google
               </Button>
-              <Button 
-                variant="outline" 
-                type="button" 
-                disabled={isLoading}
-                onClick={() => handleSocialSignIn('github')}
-                className="w-full"
-              >
-                {isLoading ? (
-                  <Spinner className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <GitHub className="mr-2 h-4 w-4" />
-                )}
-                Continue with GitHub
-              </Button>
-              
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {authMode === 'signup' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="John Doe"
-                      type="text"
-                      autoCapitalize="none"
-                      autoComplete="name"
-                      autoCorrect="off"
-                      disabled={isLoading}
-                      value={name}
-                      onChange={handleNameChange}
-                    />
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    placeholder="name@example.com"
-                    type="email"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    autoCorrect="off"
-                    disabled={isLoading}
-                    value={email}
-                    onChange={handleEmailChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
-                    {authMode === 'login' && (
-                      <Link
-                        href="/forgot-password"
-                        className="text-sm font-medium text-primary hover:underline"
-                      >
-                        Forgot password?
-                      </Link>
-                    )}
-                  </div>
-                  <Input
-                    id="password"
-                    placeholder="••••••••"
-                    type="password"
-                    autoComplete={authMode === 'login' ? 'current-password' : 'new-password'}
-                    disabled={isLoading}
-                    value={password}
-                    onChange={handlePasswordChange}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && (
-                    <Spinner className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {authMode === 'login' ? 'Sign In' : 'Create Account'}
-                </Button>
-              </form>
-              
-              <p className="px-8 text-center text-sm text-muted-foreground">
-                {authMode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
-                <button
-                  type="button"
-                  onClick={toggleAuthMode}
-                  className="underline underline-offset-4 hover:text-primary"
-                >
-                  {authMode === 'login' ? 'Sign up' : 'Sign in'}
-                </button>
-              </p>
             </div>
           </Card>
-          
-          <p className="mt-4 px-8 text-center text-sm text-muted-foreground">
-            By clicking continue, you agree to our{' '}
-            <Link href="/marketing/terms" className="underline underline-offset-4 hover:text-primary">
-              Terms of Service
-            </Link>{' '}
-            and{' '}
-            <Link href="/marketing/privacy" className="underline underline-offset-4 hover:text-primary">
-              Privacy Policy
-            </Link>
-            .
-          </p>
         </div>
       </div>
     </div>

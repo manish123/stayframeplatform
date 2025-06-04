@@ -157,6 +157,55 @@ const funMessages: FunMessages = {
       icon: 'alert-circle'
     }
   ],
+  feedback: {
+    success: [
+      {
+        message: "Feedback received! 🚀",
+        description: "Our team just did a happy dance while reading your feedback!",
+        icon: "rocket"
+      },
+      {
+        message: "You're awesome! ✨",
+        description: "Your feedback just made our day a whole lot better!",
+        icon: "sparkles"
+      },
+      {
+        message: "High five! 🙌",
+        description: "Your feedback is on its way to making our product even better!",
+        icon: "hand"
+      },
+      {
+        message: "Boom! Feedback delivered! 💥",
+        description: "Your thoughts are now in our system and ready to create some magic!",
+        icon: "zap"
+      },
+      {
+        message: "You're a rockstar! 🌟",
+        description: "Thanks for taking the time to help us improve!",
+        icon: "star"
+      }
+    ],
+    error: [
+      {
+        message: "Whoopsie daisy! 🌼",
+        description: "Something went wrong while saving your feedback. Mind giving it another shot?",
+        action: "Try again",
+        actionVariant: "outline"
+      },
+      {
+        message: "Well, this is awkward... 😅",
+        description: "We couldn't save your feedback. Maybe the internet gremlins are at it again?",
+        action: "Try again",
+        actionVariant: "outline"
+      },
+      {
+        message: "Houston, we have a problem! 🚀",
+        description: "Our servers are being shy. Let's try that again, shall we?",
+        action: "Retry",
+        actionVariant: "outline"
+      }
+    ]
+  },
   waitlist: {
     success: [
       { 

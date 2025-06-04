@@ -192,8 +192,10 @@ export default function QuoteGenerator() {
 
   const handleThemeChange = useCallback(
     (theme: string) => {
+      // If theme contains a slash, extract the first part, otherwise use the full theme name
+      const baseTheme = theme.includes('/') ? theme.split('/')[0].trim() : theme;
       setSelectedTheme(theme);
-      setSearchTerm(theme);
+      setSearchTerm(baseTheme);
       setIsThemeModalOpen(false);
       setIsImageModalOpen(true);
     },
@@ -554,7 +556,8 @@ export default function QuoteGenerator() {
             }}
             onSelect={handleImageSelect}
             searchTerm={searchTerm}
-            supportsImages={template?.supportedFeatures?.supportsImages ?? false}
+            initialSearch={searchTerm}
+            supportsImages={template?.supportedFeatures?.supportsImages ?? true}
           />
           <QuoteSelectionModal
             isOpen={isQuoteModalOpen}
