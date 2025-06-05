@@ -49,26 +49,62 @@ export const authConfig: NextAuthConfig = {
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      // Check if the email matches the admin criteria
-      if (user.email === 'msk.analyst@gmail.com' || user.email?.startsWith('vinay')) {
-        // Set the user role to admin
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { role: 'admin' }
+      try {
+        if (!user.email) {
+          console.error('No email found in user object');
+          return false;
+        }
+
+        // Check if user exists in the database
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email },
         });
-      } else {
-        // Set default role for other users
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { role: 'user' }
-        });
+
+        // If user doesn't exist, create them
+        if (!existingUser) {
+          const role = user.email === 'msk.analyst@gmail.com' || user.email.startsWith('vinay') 
+            ? 'admin' 
+            : 'user';
+            
+          await prisma.user.create({
+            data: {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              image: user.image,
+              role: role
+            },
+          });
+        } else if (!existingUser.role) {
+          // If user exists but has no role, update their role
+          const role = user.email === 'msk.analyst@gmail.com' || user.email.startsWith('vinay') 
+            ? 'admin' 
+            : 'user';
+            
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { role }
+          });
+        }
+        
+        return true;
+      } catch (error) {
+        console.error('Error in signIn callback:', error);
+        return false;
       }
-      return true;
     },
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
+        // Ensure role is always set, default to 'user' if not present
         session.user.role = user.role || 'user';
+        
+        // Log session for debugging (remove in production)
+        console.log('Session data:', {
+          id: user.id,
+          email: user.email,
+          role: session.user.role
+        });
       }
       return session;
     },
