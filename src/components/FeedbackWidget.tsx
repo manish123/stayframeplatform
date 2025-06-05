@@ -170,22 +170,31 @@ export function FeedbackWidget() {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button
-          className="fixed bottom-6 right-6 z-[100] bg-primary text-white p-3 rounded-full shadow-lg hover:bg-primary/90 transition-colors"
-          aria-label="Send feedback"
+          className={cn(
+            "fixed bottom-8 right-8 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+            open ? "scale-90 opacity-0" : "scale-100 opacity-100"
+          )}
+          aria-label="Provide feedback"
         >
-          <MessageSquare className="w-6 h-6" />
+          <MessageSquare className="h-5 w-5" />
         </button>
       </Dialog.Trigger>
 
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/50 z-[99]" />
-        <Dialog.Content className="fixed bottom-0 right-0 w-full max-w-md bg-white rounded-tl-xl rounded-tr-xl shadow-xl z-[100] p-6 max-h-[90vh] overflow-y-auto">
-          <div className="flex justify-between items-center mb-4">
-            <Dialog.Title className="text-xl font-semibold">
-              Send us your feedback
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm transition-opacity" />
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 shadow-xl sm:rounded-xl border border-border">
+          <div className="flex items-center justify-between mb-4">
+            <Dialog.Title className="text-lg font-semibold text-foreground">
+              Share Your Feedback
             </Dialog.Title>
-            <Dialog.Close className="text-gray-500 hover:text-gray-700">
-              <X className="w-5 h-5" />
+            <Dialog.Close asChild>
+              <button
+                type="button"
+                className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </Dialog.Close>
           </div>
 
@@ -203,10 +212,10 @@ export function FeedbackWidget() {
                   <label
                     key={option.value}
                     className={cn(
-                      "flex items-center justify-center p-2 border rounded-md cursor-pointer",
+                      "flex items-center justify-center p-2 border rounded-md cursor-pointer transition-colors",
                       watch('type') === option.value
                         ? "bg-primary/10 border-primary text-primary"
-                        : "border-gray-300 hover:bg-gray-50"
+                        : "border-border hover:bg-accent/50"
                     )}
                   >
                     <input
@@ -268,10 +277,10 @@ export function FeedbackWidget() {
                   <label
                     key={priority}
                     className={cn(
-                      "flex items-center justify-center p-2 border rounded-md cursor-pointer",
+                      "flex items-center justify-center p-2 border rounded-md cursor-pointer transition-colors",
                       watch('priority') === priority
                         ? "bg-primary/10 border-primary text-primary"
-                        : "border-gray-300 hover:bg-gray-50"
+                        : "border-border hover:bg-accent/50"
                     )}
                   >
                     <input
@@ -294,7 +303,7 @@ export function FeedbackWidget() {
                 <input
                   id="screenshot-consent"
                   type="checkbox"
-                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
+                  className="h-4 w-4 text-primary focus:ring-primary border-input rounded"
                   {...register('consent')}
                 />
                 <label htmlFor="screenshot-consent" className="ml-2 block text-sm text-gray-700">
@@ -339,14 +348,14 @@ export function FeedbackWidget() {
                   reset();
                   setScreenshot(null);
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-input rounded-md shadow-sm hover:bg-accent/50 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-white bg-primary border border-transparent rounded-md shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary border border-transparent rounded-md shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <>

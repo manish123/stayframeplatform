@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -103,8 +104,9 @@ const formatDateRelative = (dateString: string) => {
 const FeedbackStatus = {
   OPEN: 'open',
   IN_PROGRESS: 'in_progress',
+  ON_HOLD: 'on_hold',
   RESOLVED: 'resolved',
-  CLOSED: 'closed'
+  CLOSED: 'closed',
 } as const;
 
 type FeedbackStatus = typeof FeedbackStatus[keyof typeof FeedbackStatus];
@@ -114,8 +116,24 @@ const isFeedbackStatus = (status: string): status is FeedbackStatus => {
   return Object.values(FeedbackStatus).includes(status as FeedbackStatus);
 };
 
-type FeedbackPriority = 'low' | 'medium' | 'high';
-type FeedbackType = 'bug' | 'feature' | 'suggestion' | 'other';
+// Define the FeedbackPriority enum
+const FeedbackPriority = {
+  LOW: 'low',
+  MEDIUM: 'medium',
+  HIGH: 'high',
+} as const;
+
+type FeedbackPriority = typeof FeedbackPriority[keyof typeof FeedbackPriority];
+
+// Define the FeedbackType enum
+const FeedbackType = {
+  BUG: 'bug',
+  FEATURE: 'feature',
+  SUGGESTION: 'suggestion',
+  OTHER: 'other',
+} as const;
+
+type FeedbackType = typeof FeedbackType[keyof typeof FeedbackType];
 
 // Define the base item type
 interface BaseSelectItem {
@@ -168,23 +186,24 @@ interface Feedback {
 }
 
 const statusIcons = {
-  [FeedbackStatus.OPEN]: <AlertCircle className="h-4 w-4 text-yellow-500" />,
-  [FeedbackStatus.IN_PROGRESS]: <Loader2 className="h-4 w-4 animate-spin text-blue-500" />,
-  [FeedbackStatus.RESOLVED]: <CheckCircle className="h-4 w-4 text-green-500" />,
-  [FeedbackStatus.CLOSED]: <XCircle className="h-4 w-4 text-gray-500" />,
+  [FeedbackStatus.OPEN]: <AlertCircle className="h-4 w-4 text-yellow-500 dark:text-yellow-400" />,
+  [FeedbackStatus.IN_PROGRESS]: <Loader2 className="h-4 w-4 animate-spin text-blue-500 dark:text-blue-400" />,
+  [FeedbackStatus.ON_HOLD]: <PauseCircle className="h-4 w-4 text-orange-500 dark:text-orange-400" />,
+  [FeedbackStatus.RESOLVED]: <CheckCircle className="h-4 w-4 text-green-500 dark:text-green-400" />,
+  [FeedbackStatus.CLOSED]: <XCircle className="h-4 w-4 text-gray-500 dark:text-gray-400" />,
 };
 
 const priorityIcons = {
-  low: <ArrowDown className="h-4 w-4 text-green-500" />,
-  medium: <Equal className="h-4 w-4 text-yellow-500" />,
-  high: <ArrowUp className="h-4 w-4 text-red-500" />,
+  high: <ArrowUp className="h-4 w-4 text-red-500 dark:text-red-400" />,
+  medium: <Equal className="h-4 w-4 text-yellow-500 dark:text-yellow-400" />,
+  low: <ArrowDown className="h-4 w-4 text-green-500 dark:text-green-400" />
 };
 
 const typeIcons = {
-  bug: <Bug className="h-4 w-4 text-red-500" />,
-  feature: <Zap className="h-4 w-4 text-blue-500" />,
-  suggestion: <MessageSquare className="h-4 w-4 text-purple-500" />,
-  other: <MessageSquare className="h-4 w-4 text-gray-500" />,
+  bug: <Bug className="h-4 w-4 text-red-500 dark:text-red-400" />,
+  feature: <Zap className="h-4 w-4 text-blue-500 dark:text-blue-400" />,
+  suggestion: <MessageSquare className="h-4 w-4 text-purple-500 dark:text-purple-400" />,
+  other: <MessageSquare className="h-4 w-4 text-gray-500 dark:text-gray-400" />,
 };
 
 export default function FeedbackDashboard() {
@@ -354,38 +373,57 @@ export default function FeedbackDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <FeedbackHeader user={session?.user || null} />
-      <main className="py-6 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto p-4 md:p-6">
+      <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="container mx-auto">
           <div className="flex flex-col space-y-6">
+            {/* Header */}
+            <div className="flex flex-col space-y-2">
+              <h1 className="text-2xl font-bold tracking-tight">Feedback</h1>
+              <p className="text-muted-foreground">
+                View and manage user feedback
+              </p>
+            </div>
+
             {/* Filters and Search */}
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border border-gray-200 dark:border-gray-700">
+              <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
                   <Input
-                    type="search"
+                    type="text"
                     placeholder="Search feedback..."
-                    className="pl-8 w-full"
+                    className={cn(
+                      'pl-10 w-full',
+                      'bg-white dark:bg-gray-800',
+                      'border border-gray-200 dark:border-gray-700',
+                      'text-gray-900 dark:text-white',
+                      'placeholder-gray-400 dark:placeholder-gray-500',
+                      'focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+                      'transition-colors duration-200',
+                      'hover:border-gray-300 dark:hover:border-gray-600'
+                    )}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
+
                 <div className="flex flex-wrap gap-2">
                   <Select
                     value={statusFilter}
                     onValueChange={(value: string) => setStatusFilter(value as FeedbackStatus | 'all')}
                   >
-                    <SelectTrigger className="w-[180px]">
-                      <Filter className="mr-2 h-4 w-4" />
-                      <span>Status: </span>
-                      <SelectValue placeholder="All Statuses" />
+                    <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <Filter className="mr-2 h-4 w-4 text-gray-400 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">Status: </span>
+                      <SelectValue placeholder="All Statuses" className="text-left" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Statuses</SelectItem>
                       <SelectItem value={FeedbackStatus.OPEN}>Open</SelectItem>
                       <SelectItem value={FeedbackStatus.IN_PROGRESS}>In Progress</SelectItem>
+                      <SelectItem value={FeedbackStatus.ON_HOLD}>On Hold</SelectItem>
                       <SelectItem value={FeedbackStatus.RESOLVED}>Resolved</SelectItem>
                       <SelectItem value={FeedbackStatus.CLOSED}>Closed</SelectItem>
                     </SelectContent>
@@ -395,16 +433,16 @@ export default function FeedbackDashboard() {
                     value={priorityFilter}
                     onValueChange={(value: string) => setPriorityFilter(value as FeedbackPriority | 'all')}
                   >
-                    <SelectTrigger className="w-[180px]">
-                      <Filter className="mr-2 h-4 w-4" />
-                      <span>Priority: </span>
-                      <SelectValue placeholder="All Priorities" />
+                    <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <Filter className="mr-2 h-4 w-4 text-gray-400 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">Priority: </span>
+                      <SelectValue placeholder="All Priorities" className="text-left" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Priorities</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value={FeedbackPriority.HIGH}>High</SelectItem>
+                      <SelectItem value={FeedbackPriority.MEDIUM}>Medium</SelectItem>
+                      <SelectItem value={FeedbackPriority.LOW}>Low</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -412,17 +450,17 @@ export default function FeedbackDashboard() {
                     value={typeFilter}
                     onValueChange={(value: string) => setTypeFilter(value as FeedbackType | 'all')}
                   >
-                    <SelectTrigger className="w-[180px]">
-                      <Filter className="mr-2 h-4 w-4" />
-                      <span>Type: </span>
-                      <SelectValue placeholder="All Types" />
+                    <SelectTrigger className="w-[180px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                      <Filter className="mr-2 h-4 w-4 text-gray-400 dark:text-gray-400" />
+                      <span className="text-gray-700 dark:text-gray-300">Type: </span>
+                      <SelectValue placeholder="All Types" className="text-left" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="bug">Bug</SelectItem>
-                      <SelectItem value="feature">Feature</SelectItem>
-                      <SelectItem value="suggestion">Suggestion</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value={FeedbackType.BUG}>Bug</SelectItem>
+                      <SelectItem value={FeedbackType.FEATURE}>Feature</SelectItem>
+                      <SelectItem value={FeedbackType.SUGGESTION}>Suggestion</SelectItem>
+                      <SelectItem value={FeedbackType.OTHER}>Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -430,113 +468,113 @@ export default function FeedbackDashboard() {
             </div>
 
             {/* Feedback List */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-card rounded-lg border overflow-hidden mt-6">
               <div className="space-y-4">
                 {filteredFeedbacks.length === 0 ? (
-                  <div className="p-8 text-center rounded-lg border-2 border-dashed border-gray-200">
-                    <MessageSquare className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-700">No feedback found</h3>
-                    <p className="text-gray-500">
+                  <div className="p-8 text-center rounded-lg border-2 border-dashed border-muted">
+                    <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
+                    <h3 className="text-lg font-medium text-foreground">No feedback found</h3>
+                    <p className="text-muted-foreground">
                       {searchQuery || statusFilter !== 'all' || priorityFilter !== 'all' || typeFilter !== 'all'
                         ? 'Try adjusting your filters or search query.'
                         : 'No feedback has been submitted yet.'}
                     </p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                     {filteredFeedbacks.map((feedback) => (
                       <div 
                         key={feedback.id}
-                        className="group relative bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200"
+                        className="group relative bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow duration-200 hover:border-primary/20"
                       >
                         <Link 
-                          href={`/feedback/${feedback.id}`} 
-                          className="block p-4 pb-2 hover:bg-gray-50"
+                          href={`/feedback/${feedback.id}`}
+                          className="block h-full p-4"
                         >
-                        <div className="p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-center space-x-2">
-                              {typeIcons[feedback.type] || typeIcons.other}
-                              <h3 className="font-medium text-gray-900 line-clamp-1">
-                                {feedback.title}
-                              </h3>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge 
-                                variant="outline" 
-                                className={`text-xs ${
-                                  feedback.priority === 'high' ? 'border-red-200 text-red-800 bg-red-50' :
-                                  feedback.priority === 'medium' ? 'border-yellow-200 text-yellow-800 bg-yellow-50' :
-                                  'border-green-200 text-green-800 bg-green-50'
-                                }`}
-                              >
-                                {feedback.priority}
-                              </Badge>
-                              <div className="flex items-center">
-                                {statusIcons[feedback.status]}
-                                <span className="ml-1 text-xs text-gray-500 capitalize">
-                                  {feedback.status.replace('_', ' ')}
-                                </span>
+                          <div className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex items-center space-x-2">
+                                {typeIcons[feedback.type] || typeIcons.other}
+                                <h3 className="font-medium text-foreground line-clamp-1">
+                                  {feedback.title}
+                                </h3>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Badge 
+                                  variant="outline" 
+                                  className={`text-xs ${
+                                    feedback.priority === 'high' ? 'border-red-200 dark:border-red-900 text-red-800 dark:text-red-200 bg-red-50 dark:bg-red-900/30' :
+                                    feedback.priority === 'medium' ? 'border-yellow-200 dark:border-yellow-900 text-yellow-800 dark:text-yellow-200 bg-yellow-50 dark:bg-yellow-900/30' :
+                                    'border-green-200 dark:border-green-900 text-green-800 dark:text-green-200 bg-green-50 dark:bg-green-900/30'
+                                  }`}
+                                >
+                                  {feedback.priority}
+                                </Badge>
+                                <div className="flex items-center">
+                                  {statusIcons[feedback.status]}
+                                  <span className="ml-1 text-xs text-muted-foreground capitalize">
+                                    {feedback.status.replace('_', ' ')}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          
-                          {feedback.description && (
-                            <p className="mt-2 text-sm text-gray-600 line-clamp-2">
-                              {feedback.description}
-                            </p>
-                          )}
-                          
-                          <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
-                            <div className="flex items-center">
-                              {feedback.user?.image ? (
-                                <img
-                                  src={feedback.user.image}
-                                  alt={feedback.user.name || 'User'}
-                                  className="h-5 w-5 rounded-full mr-2"
-                                />
-                              ) : (
-                                <UserIcon className="h-4 w-4 mr-1 text-gray-400" />
-                              )}
-                              <span>{feedback.user?.name || 'Anonymous'}</span>
+                            
+                            {feedback.description && (
+                              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                                {feedback.description}
+                              </p>
+                            )}
+                            
+                            <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+                              <div className="flex items-center">
+                                {feedback.user?.image ? (
+                                  <img
+                                    src={feedback.user.image}
+                                    alt={feedback.user.name || 'User'}
+                                    className="h-5 w-5 rounded-full mr-2"
+                                  />
+                                ) : (
+                                  <UserIcon className="h-4 w-4 mr-1 text-muted-foreground" />
+                                )}
+                                <span className="text-foreground">{feedback.user?.name || 'Anonymous'}</span>
+                              </div>
+                              <span>{formatDateRelative(feedback.createdAt)}</span>
                             </div>
-                            <span>{formatDateRelative(feedback.createdAt)}</span>
                           </div>
-                        </div>
-                        
-                        <div className="border-t border-gray-100 bg-gray-50 px-4 py-2 flex justify-between items-center">
-                          <Select
-                            value={feedback.status}
-                            onValueChange={(value) => handleStatusUpdate(feedback.id, value)}
-                          >
-                            <SelectTrigger className="h-8 text-xs px-2 bg-white">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value={FeedbackStatus.OPEN}>Open</SelectItem>
-                              <SelectItem value={FeedbackStatus.IN_PROGRESS}>In Progress</SelectItem>
-                              <SelectItem value={FeedbackStatus.RESOLVED}>Resolved</SelectItem>
-                              <SelectItem value={FeedbackStatus.CLOSED}>Closed</SelectItem>
-                            </SelectContent>
-                          </Select>
                           
-                          <Select
-                            value={feedback.priority}
-                            onValueChange={(value) => handlePriorityUpdate(feedback.id, value)}
-                          >
-                            <SelectTrigger className="h-8 text-xs px-2 bg-white">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="high">High</SelectItem>
-                              <SelectItem value="medium">Medium</SelectItem>
-                              <SelectItem value="low">Low</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
+                          <div className="border-t border-gray-100 bg-gray-50 dark:bg-gray-700 px-4 py-2 flex justify-between items-center">
+                            <Select
+                              value={feedback.status}
+                              onValueChange={(value) => handleStatusUpdate(feedback.id, value)}
+                            >
+                              <SelectTrigger className="h-8 text-xs px-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <SelectValue className="text-xs" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value={FeedbackStatus.OPEN}>Open</SelectItem>
+                                <SelectItem value={FeedbackStatus.IN_PROGRESS}>In Progress</SelectItem>
+                                <SelectItem value={FeedbackStatus.RESOLVED}>Resolved</SelectItem>
+                                <SelectItem value={FeedbackStatus.CLOSED}>Closed</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            
+                            <Select
+                              value={feedback.priority}
+                              onValueChange={(value) => handlePriorityUpdate(feedback.id, value)}
+                            >
+                              <SelectTrigger className="h-8 text-xs px-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <SelectValue className="text-xs" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="high">High</SelectItem>
+                                <SelectItem value="medium">Medium</SelectItem>
+                                <SelectItem value="low">Low</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </Link>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

@@ -23,16 +23,22 @@ export interface CanvasElement {
 export interface TextElementProperties {
   content: string;
   fontFamily: string;
-  fontSize: number; // in pixels (ensure consistency with canvasDimensions)
+  fontSize: number; // in pixels
   fontWeight?: 'normal' | 'bold' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
   fontStyle?: 'normal' | 'italic';
   color: string; // hex, rgba, etc.
   textAlign?: 'left' | 'center' | 'right' | 'justify';
-  lineHeight?: number; // e.g., 1.5 (for 150% of fontSize)
-  letterSpacing?: number; // in pixels or em
-  textTransform?: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
-  textShadow?: string; // Added textShadow as an optional property
-  // textShadow?: {offsetX: number, offsetY: number, blurRadius: number, color: string}; // Future
+  lineHeight?: number; // 1.0 to 2.0 (100% to 200% of font size)
+  letterSpacing?: number; // in pixels (positive or negative)
+  textDecoration?: 'none' | 'underline' | 'line-through' | 'underline line-through';
+  textShadow?: string; // CSS text-shadow value
+  // Advanced text shadow (future enhancement)
+  // textShadowConfig?: {
+  //   offsetX: number;
+  //   offsetY: number;
+  //   blurRadius: number;
+  //   color: string;
+  // };
 }
 export interface TextCanvasElement extends CanvasElement, TextElementProperties {
   type: 'text';
