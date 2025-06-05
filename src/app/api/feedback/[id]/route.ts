@@ -117,8 +117,8 @@ export async function PATCH(
     }
 
     // Allow any authenticated user to update feedback
-
-    const { id } = params;
+    // Await the params object to ensure it's resolved
+    const { id } = await Promise.resolve(params);
     const body = await request.json();
     const parsed = updateFeedbackSchema.safeParse(body);
 
@@ -224,7 +224,8 @@ export async function DELETE(
 
     // Allow any authenticated user to delete feedback
 
-    const { id } = params;
+    // Await the params object to ensure it's resolved
+    const { id } = await Promise.resolve(params);
 
     // Delete the feedback (cascading delete will handle progress logs)
     await prisma.feedback.delete({

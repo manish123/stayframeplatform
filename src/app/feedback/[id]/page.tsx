@@ -137,7 +137,7 @@ export default function FeedbackDetailPage() {
   const [status, setStatus] = useState<FeedbackStatus>('Open');
   const [priority, setPriority] = useState<FeedbackPriority>('medium');
   const [note, setNote] = useState('');
-  const [noteType, setNoteType] = useState<NoteType>('Comment');
+  const [noteType, setNoteType] = useState<NoteType>('comment');
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -245,8 +245,8 @@ export default function FeedbackDetailPage() {
         },
         body: JSON.stringify({
           note: {
-            content: note,
             type: noteType,
+            comment: note,
           },
         }),
       });
@@ -256,7 +256,7 @@ export default function FeedbackDetailPage() {
         throw new Error(errorData.message || 'Failed to add note');
       }
 
-      const { data: updatedFeedback } = await response.json() as { data: Feedback };
+      const updatedFeedback = await response.json();
       setFeedback(updatedFeedback);
       setNote('');
       toast.success('Note added successfully');
@@ -421,14 +421,15 @@ export default function FeedbackDetailPage() {
                                   </div>
                                   <div className="mt-2">
                                     <Badge
-                                      variant={log.noteType === 'Decision' ? 'default' : 'outline'}
+                                      variant={log.noteType === 'decision' ? 'default' : 'outline'}
                                       className={cn(
                                         'text-xs',
-                                        log.noteType === 'Decision' ? 'bg-blue-100 text-blue-800' : '',
-                                        log.noteType === 'Update' ? 'bg-purple-100 text-purple-800' : ''
+                                        log.noteType === 'decision' ? 'bg-blue-100 text-blue-800' : '',
+                                        log.noteType === 'update' ? 'bg-purple-100 text-purple-800' : ''
                                       )}
                                     >
-                                      {log.noteType}
+                                      {log.noteType === 'comment' ? 'Comment' : 
+                                       log.noteType === 'update' ? 'Update' : 'Decision'}
                                     </Badge>
                                   </div>
                                 </div>
@@ -467,10 +468,10 @@ export default function FeedbackDetailPage() {
                           <SelectValue placeholder="Note type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Comment">Comment</SelectItem>
-                          <SelectItem value="Update">Update</SelectItem>
+                          <SelectItem value="comment">Comment</SelectItem>
+                          <SelectItem value="update">Update</SelectItem>
                           {session?.user?.role === 'admin' && (
-                            <SelectItem value="Decision">Decision</SelectItem>
+                            <SelectItem value="decision">Decision</SelectItem>
                           )}
                         </SelectContent>
                       </Select>
@@ -548,23 +549,23 @@ export default function FeedbackDetailPage() {
                 </div>
 
                 {/* Metadata Card */}
-                {feedback.metadata && (
+                {feedback?.metadata && (
                   <div className="rounded-lg border bg-card p-6">
                     <h2 className="text-lg font-medium mb-4">System Information</h2>
                     <div className="space-y-3">
-                      {feedback.metadata.browser && (
+                      {feedback.metadata?.browser && (
                         <div>
                           <h3 className="text-sm font-medium text-muted-foreground">Browser</h3>
                           <p className="text-sm">{feedback.metadata.browser}</p>
                         </div>
                       )}
-                      {feedback.metadata.os && (
+                      {feedback.metadata?.os && (
                         <div>
                           <h3 className="text-sm font-medium text-muted-foreground">Operating System</h3>
                           <p className="text-sm">{feedback.metadata.os}</p>
                         </div>
                       )}
-                      {feedback.metadata.url && (
+                      {feedback.metadata?.url && (
                         <div>
                           <h3 className="text-sm font-medium text-muted-foreground">Page URL</h3>
                           <a
@@ -577,7 +578,7 @@ export default function FeedbackDetailPage() {
                           </a>
                         </div>
                       )}
-                      {feedback.metadata.timestamp && (
+                      {feedback.metadata?.timestamp && (
                         <div>
                           <h3 className="text-sm font-medium text-muted-foreground">Reported At</h3>
                           <p className="text-sm">
