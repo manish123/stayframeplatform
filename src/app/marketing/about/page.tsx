@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { TeamSection } from '@/components/about/TeamSection';
-import Link from 'next/link';
 import { ToolSelector } from '@/components/ToolSelector';
 
 export default function AboutPage() {
@@ -19,20 +17,16 @@ export default function AboutPage() {
       <section className="py-16 md:py-24 bg-gradient-to-b from-background to-muted/30">
         <div className="container text-center max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Where Creativity Meets Intelligence
+            Turn Your Creativity Into Income
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            At StayFrame, we're revolutionizing digital storytelling by seamlessly blending 
-            advanced AI capabilities with intuitive design experiences that inspire creators worldwide.
+            At StayFrame, we empower content creators to monetize their passion. 
+            Our AI-driven platform provides the tools, knowledge, and marketplace you need to transform 
+            your creative work into sustainable income.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button onClick={handleGetStarted} size="lg">
-              Begin Your Journey
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <a href="#team">Meet the Visionaries</a>
-            </Button>
-          </div>
+          <Button onClick={handleGetStarted} size="lg">
+            Start Earning Today
+          </Button>
         </div>
       </section>
 
@@ -41,23 +35,54 @@ export default function AboutPage() {
         <div className="container">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl font-bold">Our Genesis</h2>
+              <h2 className="text-3xl font-bold">Empowering Creator Success</h2>
               <p className="text-muted-foreground">
-                Born in early 2025 from a bold vision to democratize creative expression, StayFrame represents 
-                the convergence of imagination and technology. Co-founders x and y 
-                identified a crucial opportunity to bridge the gap between sophisticated AI and accessible creativity.
+                In today's digital landscape, creators face the challenge of not just creating amazing content, 
+                but also making it financially sustainable. StayFrame was born in 2025 to solve this exact challenge 
+                by providing a comprehensive ecosystem where creativity meets commerce.
               </p>
               <p className="text-muted-foreground">
-                What began as passionate conversations between industry veterans has evolved into a thriving, 
-                remote-first organization that spans continents. We champion the belief that extraordinary 
-                content should be within everyone's reach, regardless of technical expertise.
+                We understand that every like, share, and view represents more than just engagement—it's an 
+                opportunity to build a sustainable career. Our platform is designed to help you maximize 
+                your content's earning potential through intelligent tools, data-driven insights, and direct 
+                monetization channels that put you in control of your financial success.
               </p>
+              <div className="bg-primary/5 p-4 rounded-lg border border-primary/10">
+                <p className="text-primary font-medium">
+                  "The best creators deserve to be rewarded for their work. We're building the future where 
+                  creative talent is valued and compensated fairly."
+                </p>
+              </div>
             </div>
-            <div className="bg-muted rounded-xl aspect-video flex items-center justify-center p-8">
-              <div className="text-center">
-                <div className="text-6xl mb-4">✨</div>
-                <p className="text-muted-foreground">
-                  Transforming ideas into extraordinary experiences
+            <div className="space-y-6">
+              <div className="bg-background p-6 rounded-xl border">
+                <h3 className="font-semibold text-lg mb-3">How We Help You Earn</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <div className="text-primary mt-0.5">💰</div>
+                    <span>Monetize your content through our creator marketplace</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="text-primary mt-0.5">📈</div>
+                    <span>Access real-time analytics to optimize your content strategy</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="text-primary mt-0.5">🤖</div>
+                    <span>Leverage AI to identify trending topics and viral opportunities</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="text-primary mt-0.5">🔄</div>
+                    <span>Automate content repurposing for multiple platforms</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="text-primary mt-0.5">💼</div>
+                    <span>Connect with brands and sponsors through our network</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="bg-muted/50 p-4 rounded-lg text-center">
+                <p className="text-sm text-muted-foreground">
+                  Join thousands of creators already growing their income with StayFrame
                 </p>
               </div>
             </div>
@@ -65,66 +90,216 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Mission & Values */}
+      {/* The StayFrame Difference */}
       <section className="py-16 md:py-24 bg-muted/30">
         <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">Our Purpose & Principles</h2>
-            <p className="text-muted-foreground max-w-3xl mx-auto">
-              We exist to unlock human creativity through intelligent technology, making professional-grade content creation effortless and inspiring.
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl font-bold mb-4">Grow Your Income, Not Just Your Audience</h2>
+            <p className="text-muted-foreground">
+              StayFrame isn't just about creating content—it's about building a sustainable creative business. 
+              Our platform is packed with features designed to help you maximize your earnings and turn your passion into profit.
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-card p-6 rounded-lg shadow-sm">
-              <div className="text-2xl mb-4">🚀</div>
-              <h3 className="text-xl font-semibold mb-2">Innovation at Heart</h3>
+            <div className="bg-background p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                <span className="text-2xl">📊</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Data-Driven Insights</h3>
               <p className="text-muted-foreground">
-                We relentlessly explore the frontiers of AI and design, crafting tools that don't just respond 
-                to creativity—they amplify and inspire it.
+                Get real-time analytics on what content performs best and when to post for maximum visibility and revenue.
+                Our AI identifies patterns to help you create more of what your audience loves.
               </p>
             </div>
             
-            <div className="bg-card p-6 rounded-lg shadow-sm">
-              <div className="text-2xl mb-4">🎨</div>
-              <h3 className="text-xl font-semibold mb-2">Creative Empowerment</h3>
+            <div className="bg-background p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                <span className="text-2xl">🚀</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Viral Potential</h3>
               <p className="text-muted-foreground">
-                Every individual has a unique voice worth sharing. We eliminate barriers between imagination 
-                and expression, making powerful creation tools universally accessible.
+                Our AI predicts trending topics and helps you create content with higher viral potential. 
+                Stay ahead of the curve and ride the wave of what's about to be popular.
               </p>
             </div>
             
-            <div className="bg-card p-6 rounded-lg shadow-sm">
-              <div className="text-2xl mb-4">🌍</div>
-              <h3 className="text-xl font-semibold mb-2">Global Mindset</h3>
+            <div className="bg-background p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
+                <span className="text-2xl">💸</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Multiple Revenue Streams</h3>
               <p className="text-muted-foreground">
-                Our distributed team celebrates diverse perspectives and cultural richness, building inclusive 
-                products that resonate across borders and communities.
+                Diversify your income with our marketplace, brand partnerships, and direct fan support. 
+                We make it easy to monetize every aspect of your creative work.
               </p>
+            </div>
+          </div>
+          
+          <div className="mt-12 bg-background p-8 rounded-xl border">
+            <div className="max-w-2xl mx-auto text-center">
+              <h3 className="text-2xl font-bold mb-4">Creator Success Stories</h3>
+              <p className="text-muted-foreground mb-6">
+                "Since joining StayFrame, I've been able to double my monthly income while spending less time on content creation. 
+                The AI tools help me identify what works, and the marketplace connects me with amazing brand opportunities."
+              </p>
+              <div className="text-sm text-muted-foreground">— Alex R., Digital Artist & Content Creator</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Team Section */}
-      <div id="team">
-        <TeamSection />
-      </div>
+      {/* Our Values */}
+      <section className="py-16 md:py-24">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Our Commitment to Your Success</h2>
+            <p className="text-muted-foreground">
+              We're building more than a platform—we're building pathways to financial freedom for creators. 
+              These principles guide how we help you turn your creativity into a sustainable career.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="space-y-8">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="text-xl">💰</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Creator-First Monetization</h3>
+                  <p className="text-muted-foreground">
+                    We prioritize features that put money in your pocket first. From our marketplace to brand 
+                    partnerships, we ensure you keep the lion's share of your earnings.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="text-xl">📈</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Data-Backed Growth</h3>
+                  <p className="text-muted-foreground">
+                    Our AI analyzes millions of data points to give you actionable insights that actually 
+                    grow your audience and income, not just vanity metrics.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-8">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="text-xl">🤝</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Community & Collaboration</h3>
+                  <p className="text-muted-foreground">
+                    Connect with fellow creators, share strategies, and find collaboration opportunities that 
+                    amplify your reach and revenue potential.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="text-xl">⚡</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">Efficiency = Profitability</h3>
+                  <p className="text-muted-foreground">
+                    Our tools help you create better content faster, giving you more time to focus on growing 
+                    your business and less time on tedious tasks.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-16 bg-primary/5 p-6 rounded-xl border border-primary/10">
+            <div className="max-w-3xl mx-auto text-center">
+              <h3 className="text-2xl font-bold mb-4">Proven Results</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
+                <div>
+                  <div className="text-3xl font-bold text-primary">3.5x</div>
+                  <div className="text-muted-foreground">Average increase in creator earnings</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-primary">82%</div>
+                  <div className="text-muted-foreground">Of creators see growth in first 30 days</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-primary">24/7</div>
+                  <div className="text-muted-foreground">Support for your creative business</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-primary">10k+</div>
+                  <div className="text-muted-foreground">Creators growing with us</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-primary text-primary-foreground">
-        <div className="container text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Elevate Your Creative Vision?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Join a growing community of creators who are already transforming their ideas into compelling content with StayFrame.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button variant="secondary" size="lg" asChild>
-              <Link href="/pricing">Discover Plans</Link>
-            </Button>
-            <Button variant="outline" size="lg" className="bg-transparent border-white/20 hover:bg-white/10" asChild>
-              <Link href="/marketing/contact">Let's Connect</Link>
-            </Button>
+      {/* Start Earning with StayFrame */}
+      <section className="py-16 md:py-24 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground">
+        <div className="container">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Turn Your Creativity Into Income?</h2>
+            <p className="text-xl mb-8 max-w-3xl mx-auto opacity-95">
+              Join thousands of creators who are already building sustainable businesses with StayFrame. 
+              Start monetizing your passion today—no large following required.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-10">
+              <Button 
+                onClick={handleGetStarted}
+                size="lg"
+                className="px-8 py-6 text-lg bg-background text-foreground hover:bg-background/90 transition-all transform hover:scale-105 shadow-lg"
+              >
+                Start Earning Now — It's Free
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="px-8 py-6 text-lg border-2 border-white/20 hover:bg-white/10 transition-all"
+                onClick={handleGetStarted}
+              >
+                See How It Works
+              </Button>
+            </div>
+            
+            <div className="mt-10 pt-6 border-t border-white/10">
+              <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-sm opacity-80">
+                <div className="flex items-center gap-2">
+                  <span>✓</span>
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>✓</span>
+                  <span>Cancel anytime</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>✓</span>
+                  <span>30-day money-back guarantee</span>
+                </div>
+              </div>
+              
+              <div className="mt-8 flex justify-center items-center gap-2 text-sm opacity-70">
+                <span>Trusted by 10,000+ creators worldwide</span>
+                <span className="text-xs">•</span>
+                <div className="flex -space-x-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs font-medium">
+                      {i}+{i*2}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
