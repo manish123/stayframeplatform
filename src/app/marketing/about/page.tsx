@@ -44,7 +44,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold">Our Genesis</h2>
               <p className="text-muted-foreground">
                 Born in early 2025 from a bold vision to democratize creative expression, StayFrame represents 
-                the convergence of imagination and technology. Co-founders Manish Singh and Vinay Nandkarni 
+                the convergence of imagination and technology. Co-founders x and y 
                 identified a crucial opportunity to bridge the gap between sophisticated AI and accessible creativity.
               </p>
               <p className="text-muted-foreground">

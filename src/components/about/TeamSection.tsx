@@ -15,33 +15,33 @@ type TeamMember = {
 
 const teamMembers: TeamMember[] = [
   {
-    name: 'Manish Singh',
-    role: 'Founder & CTO',
+    name: 'x',
+    role: 'Founder',
     bio: 'Visionary technologist with deep expertise in architecting enterprise-scale platforms that serve millions. Passionate about leveraging AI to transform and democratize content creation.',
-    image: '/team/manish-singh.jpg',
+    image: '/team/1.jpg',
     social: {
-      linkedin: 'https://linkedin.com/in/manishsingh',
-      twitter: 'https://twitter.com/manishsingh',
+      linkedin: 'https://linkedin.com/',
+      twitter: 'https://twitter.com/',
     },
   },
   {
-    name: 'Vinay Nandkarni',
-    role: 'Co-Founder & COO',
+    name: 'y',
+    role: 'Co-Founder',
     bio: 'Strategic operations leader with a proven track record of scaling products from concept to global impact. Expert in building high-performance teams and delivering exceptional user experiences.',
-    image: '/team/vinay-nandkarni.jpg',
+    image: '/team/2.jpg',
     social: {
-      linkedin: 'https://linkedin.com/in/vinaynandkarni',
-      twitter: 'https://twitter.com/vinayn',
+      linkedin: 'https://linkedin.com/',
+      twitter: 'https://twitter.com/',
     },
   },
   {
-    name: 'Diana Foster',
+    name: 'z',
     role: 'Head of Marketing',
     bio: 'Creative strategist and storyteller who transforms complex ideas into compelling narratives. Masters the art of building authentic connections between brands and their communities.',
-    image: '/team/diana-foster.jpg',
+    image: '/team/3.jpg',
     social: {
-      linkedin: 'https://linkedin.com/in/dianafoster',
-      twitter: 'https://twitter.com/dianafoster',
+      linkedin: 'https://linkedin.com/',
+      twitter: 'https://twitter.com/',
     },
   },
   {
