@@ -138,12 +138,62 @@ export default function AboutPage() {
           
           <div className="mt-12 bg-background p-8 rounded-xl border">
             <div className="max-w-2xl mx-auto text-center">
-              <h3 className="text-2xl font-bold mb-4">Creator Success Stories</h3>
+              <h3 className="text-2xl font-bold mb-4">Beta Tester Testimonials</h3>
               <p className="text-muted-foreground mb-6">
-                "Since joining StayFrame, I've been able to double my monthly income while spending less time on content creation. 
-                The AI tools help me identify what works, and the marketplace connects me with amazing brand opportunities."
+                Don't just take our word for it. Here's what our beta testers are saying after their first two weeks with StayFrame.
               </p>
-              <div className="text-sm text-muted-foreground">— Alex R., Digital Artist & Content Creator</div>
+              <div className="grid md:grid-cols-3 gap-8">
+                {/* Testimonial 1 - Small Brand Owner */}
+                <div className="bg-background p-6 rounded-xl border hover:shadow-md transition-shadow">
+                  <div className="text-primary text-4xl mb-4">"</div>
+                  <p className="text-muted-foreground mb-6">
+                    "After just two weeks with StayFrame, I'm impressed by how the knowledge base and simple tools work together. The trend highlighter 
+                    helped me spot a rising ingredient trend that I featured in my latest post—it got 3x our usual engagement! The platform's potential 
+                    to help small businesses like Salsa Salad is really exciting."
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">A</div>
+                    <div>
+                      <div className="font-semibold">Archie</div>
+                      <div className="text-sm text-muted-foreground">Owner, Salsa Salad</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Testimonial 2 - Marketing Agency Owner */}
+                <div className="bg-background p-6 rounded-xl border hover:shadow-md transition-shadow">
+                  <div className="text-primary text-4xl mb-4">"</div>
+                  <p className="text-muted-foreground mb-6">
+                    "The vision behind StayFrame's marketplace is exactly what our agency has been looking for. Even in these early stages, I can see 
+                    how the campaign management workflow could transform how we handle client projects. The ability to coordinate content, track performance, 
+                    and manage approvals all in one place shows tremendous promise for scaling our operations."
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">M</div>
+                    <div>
+                      <div className="font-semibold">Mitest K.</div>
+                      <div className="text-sm text-muted-foreground">CEO, Horizon Digital Solutions</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Testimonial 3 - Independent Content Creator */}
+                <div className="bg-background p-6 rounded-xl border hover:shadow-md transition-shadow">
+                  <div className="text-primary text-4xl mb-4">"</div>
+                  <p className="text-muted-foreground mb-6">
+                    "I was skeptical about trying another content tool, but StayFrame's Quote Forge Pro surprised me! The trend picker is incredibly 
+                    intuitive, and I love that I can post directly to X without switching apps. In just a couple of weeks, it's already made my content 
+                    creation process so much smoother. The interface is clean and doesn't feel overwhelming like some professional tools can be."
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">U</div>
+                    <div>
+                      <div className="font-semibold">Usha M.</div>
+                      <div className="text-sm text-muted-foreground">Hobbyist Creator on X</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -213,30 +263,6 @@ export default function AboutPage() {
                     Our tools help you create better content faster, giving you more time to focus on growing 
                     your business and less time on tedious tasks.
                   </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-16 bg-primary/5 p-6 rounded-xl border border-primary/10">
-            <div className="max-w-3xl mx-auto text-center">
-              <h3 className="text-2xl font-bold mb-4">Proven Results</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
-                <div>
-                  <div className="text-3xl font-bold text-primary">3.5x</div>
-                  <div className="text-muted-foreground">Average increase in creator earnings</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-primary">82%</div>
-                  <div className="text-muted-foreground">Of creators see growth in first 30 days</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-primary">24/7</div>
-                  <div className="text-muted-foreground">Support for your creative business</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-primary">10k+</div>
-                  <div className="text-muted-foreground">Creators growing with us</div>
                 </div>
               </div>
             </div>
