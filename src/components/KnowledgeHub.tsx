@@ -4,22 +4,26 @@
 import { motion } from 'framer-motion';
 import { MessageSquare, Image as ImageIcon, Film, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
 
 const knowledgeHubItems = [
   {
     title: 'The Psychology of Viral Quotes',
     description: 'Unlock the emotional triggers and storytelling techniques that make quotes resonate deeply and inspire immediate sharing across communities.',
     icon: <MessageSquare className="h-6 w-6 text-primary" />,
+    slug: 'psychology-viral-quotes',
   },
   {
     title: 'Meme Mastery & Cultural Intelligence',
     description: 'Decode the art of cultural timing and visual humor. Learn to create memes that capture zeitgeist moments and spark conversations.',
     icon: <ImageIcon className="h-6 w-6 text-blue-500" />,
+    slug: 'meme-mastery-cultural-intelligence',
   },
   {
     title: 'Short-Form Video Storytelling',
     description: 'Master the craft of micro-narratives that captivate within seconds. Transform fleeting attention into lasting engagement and meaningful connections.',
     icon: <Film className="h-6 w-6 text-pink-500" />,
+    slug: 'short-form-video-storytelling',
   },
 ];
 
@@ -51,10 +55,12 @@ export function KnowledgeHub() {
                 <h3 className="text-lg font-semibold">{item.title}</h3>
               </div>
               <p className="text-muted-foreground">{item.description}</p>
-              <Button variant="ghost" size="sm" className="mt-4 pl-0">
-                Explore Insights
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              <Link href={`/knowledge-hub/${item.slug}`}>
+                <Button variant="ghost" size="sm" className="mt-4 pl-0">
+                  Explore Insights
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </motion.div>
           ))}
         </div>
