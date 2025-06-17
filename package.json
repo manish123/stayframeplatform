@@ -69,7 +69,6 @@
     "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "@types/remark-html": "^16.0.0",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
