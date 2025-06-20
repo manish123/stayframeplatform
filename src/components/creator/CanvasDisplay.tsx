@@ -6,12 +6,15 @@ import { useTemplateStore } from '@/store/templateStore';
 import { BaseTemplate, AnyCanvasElement, TextCanvasElement, ImageCanvasElement, VideoCanvasElement, WatermarkCanvasElement } from '@/types/templates';
 import { debounce } from '@/utils/debounce'; // Import your debounce utility
 
+// In CanvasDisplay.tsx, update the CanvasDisplayProps interface:
 interface CanvasDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
   template?: BaseTemplate | null;
   outputWidth?: number;
   outputHeight?: number;
   sourceWidth?: number;
   sourceHeight?: number;
+  containerWidth?: number;  // Add this line
+  containerHeight?: number; // Add this line
   uiScale?: number;
   className?: string;
   style?: React.CSSProperties;
@@ -49,15 +52,31 @@ const CanvasDisplay = React.forwardRef<HTMLDivElement, CanvasDisplayProps>(({
     []
   );
 
-  useEffect(() => {
-    updateSize();
-    const handleResize = () => updateSize();
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      updateSize.cancel();
-    };
-  }, [updateSize]);
+// In CanvasDisplay.tsx, update the useEffect that handles resizing:
+useEffect(() => {
+  const updateSize = () => {
+    if (props.containerWidth && props.containerHeight) {
+      // Use provided container dimensions if available
+      setContainerSize({
+        width: props.containerWidth,
+        height: props.containerHeight
+      });
+    } else if (containerRef.current) {
+      // Fall back to measuring the container
+      setContainerSize({
+        width: containerRef.current.offsetWidth,
+        height: containerRef.current.offsetHeight,
+      });
+    }
+  };
+
+  updateSize();
+  const handleResize = debounce(updateSize, 100);
+  window.addEventListener('resize', handleResize);
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, [props.containerWidth, props.containerHeight]); // Add dependencies
 
   useEffect(() => {
     const timer = setTimeout(() => {
