@@ -88,10 +88,8 @@ export default function PrivacyPage() {
 
           <h2>9. Contact Us</h2>
           <p>
-            If you have any questions about this Privacy Policy, please contact us at{' '}
-            <Link href="mailto:privacy@stayframe.com" className="text-primary hover:underline">
-              privacy@stayframe.com
-            </Link>
+            If you have any questions about this Privacy Policy, please contact us through feedback form 
+            
             .
           </p>
         </div>

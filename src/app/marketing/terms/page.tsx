@@ -207,10 +207,7 @@ export default function TermsPage() {
 
           <h2>18. Contact Information</h2>
           <p>
-            If you have any questions about these Terms, please contact us at{' '}
-            <Link href="mailto:legal@stayframe.com" className="text-primary hover:underline">
-              legal@stayframe.com
-            </Link>
+            If you have any questions about these Terms, please contact us through feedback form 
             . Our registered office is located in Pune, Maharashtra, India.
           </p>
 

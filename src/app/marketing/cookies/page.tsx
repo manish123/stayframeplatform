@@ -125,10 +125,8 @@ export default function CookiesPage() {
 
           <h2>8. Contact Us</h2>
           <p>
-            If you have any questions about our use of cookies or other technologies, please contact us at{' '}
-            <a href="mailto:privacy@stayframe.com" className="text-primary hover:underline">
-              privacy@stayframe.com
-            </a>
+            If you have any questions about our use of cookies or other technologies, please contact us through feedback form 
+            
             .
           </p>
         </div>
