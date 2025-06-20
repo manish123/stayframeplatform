@@ -32,7 +32,7 @@ export class CanvasRenderer {
     // Use template dimensions or provided dimensions
     let width = options.width || template.canvasDimensions?.width || 1920;
     let height = options.height || template.canvasDimensions?.height || 1080;
-    
+
     // Apply max dimension limit for file size control
     if (options.maxDimension) {
       const maxDim = Math.max(width, height);
@@ -42,19 +42,19 @@ export class CanvasRenderer {
         height *= scale;
       }
     }
-    
+
     const pixelRatio = options.pixelRatio || 1;
     const scale = (options.scale || 1) * pixelRatio;
-    
+
     // Setup canvas
     this.canvas.width = width * pixelRatio;
     this.canvas.height = height * pixelRatio;
-    
+
     // Scale context for high DPI
     if (pixelRatio !== 1) {
       this.ctx.scale(pixelRatio, pixelRatio);
     }
-    
+
     // Apply quality settings for compression
     if (options.compression) {
       this.ctx.imageSmoothingEnabled = true;
@@ -63,22 +63,22 @@ export class CanvasRenderer {
       this.ctx.imageSmoothingEnabled = true;
       this.ctx.imageSmoothingQuality = 'high';
     }
-    
+
     // Clear and set background
     this.ctx.fillStyle = options.backgroundColor || template.canvasBackgroundColor || '#ffffff';
     this.ctx.fillRect(0, 0, width, height);
-    
+
     // Pre-load all assets
     await this.preloadAssets(template.elements);
-    
+
     // Sort elements by z-index for proper layering
     const sortedElements = [...template.elements].sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
-    
+
     // Render each element
     for (const element of sortedElements) {
       await this.renderElement(element);
     }
-    
+
     return this.canvas;
   }
 
@@ -124,7 +124,7 @@ export class CanvasRenderer {
 
   private async loadFont(fontFamily: string, fontWeight?: string, fontStyle?: string): Promise<void> {
     const fontKey = `${fontStyle || 'normal'} ${fontWeight || 'normal'} 16px ${fontFamily}`;
-    
+
     try {
       // Try to load the font
       await document.fonts.load(fontKey);
@@ -137,10 +137,10 @@ export class CanvasRenderer {
 
   private async renderElement(element: AnyCanvasElement): Promise<void> {
     this.ctx.save();
-    
+
     // Apply common transformations
     this.applyTransforms(element);
-    
+
     // Apply opacity
     if (element.opacity !== undefined) {
       this.ctx.globalAlpha = element.opacity;
@@ -160,22 +160,22 @@ export class CanvasRenderer {
         await this.renderVideoElement(element as VideoCanvasElement);
         break;
     }
-    
+
     this.ctx.restore();
   }
 
   private applyTransforms(element: AnyCanvasElement): void {
     const centerX = element.x + element.width / 2;
     const centerY = element.y + element.height / 2;
-    
+
     // Move to center for rotation
     this.ctx.translate(centerX, centerY);
-    
+
     // Apply rotation
     if (element.rotation) {
       this.ctx.rotate((element.rotation * Math.PI) / 180);
     }
-    
+
     // Move back
     this.ctx.translate(-centerX, -centerY);
   }
@@ -188,7 +188,7 @@ export class CanvasRenderer {
     const fontWeight = element.fontWeight || 'normal';
     const fontStyle = element.fontStyle || 'normal';
     const fontFamily = element.fontFamily || 'Arial, sans-serif';
-    
+
     this.ctx.font = `${fontStyle} ${fontWeight} ${fontSize}px ${fontFamily}`;
     this.ctx.fillStyle = element.color || '#000000';
     this.ctx.textBaseline = 'top';
@@ -199,10 +199,10 @@ export class CanvasRenderer {
 
     const lineHeight = fontSize * (element.lineHeight || 1.2);
     const maxWidth = element.width - 8; // Padding similar to CSS
-    
+
     // Get wrapped lines
     const wrappedLines = this.wrapText(element.content, maxWidth);
-    
+
     // Calculate vertical positioning
     const totalTextHeight = wrappedLines.length * lineHeight;
     const availableHeight = element.height - 8; // Account for padding
@@ -280,24 +280,64 @@ export class CanvasRenderer {
     this.ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
   }
 
-  private async renderVideoElement(element: VideoCanvasElement): Promise<void> {
-    // For static export, you might want to render a thumbnail or placeholder
-    // This is a simplified implementation
-    this.ctx.fillStyle = '#000000';
-    this.ctx.fillRect(element.x, element.y, element.width, element.height);
-    
-    // Add play icon or "VIDEO" text
-    this.ctx.fillStyle = '#ffffff';
-    this.ctx.font = '24px Arial';
-    this.ctx.textAlign = 'center';
-    this.ctx.textBaseline = 'middle';
-    this.ctx.fillText(
-      'VIDEO',
-      element.x + element.width / 2,
-      element.y + element.height / 2
-    );
-  }
+  private async renderVideoElement(element: VideoCanvasElement, currentTime: number = 0): Promise<void> {
+    const video = document.createElement('video');
+    video.crossOrigin = 'anonymous';
+    video.muted = true;
+    video.playsInline = true;
+    video.currentTime = currentTime;
 
+    try {
+      // Load the video
+      await new Promise<void>((resolve, reject) => {
+        const onCanPlay = () => {
+          video.removeEventListener('canplay', onCanPlay);
+          video.removeEventListener('error', onError);
+          resolve();
+        };
+
+        const onError = (e: Event) => {
+          video.removeEventListener('canplay', onCanPlay);
+          video.removeEventListener('error', onError);
+          reject(new Error('Failed to load video'));
+        };
+
+        video.addEventListener('canplay', onCanPlay, { once: true });
+        video.addEventListener('error', onError, { once: true });
+
+        video.src = element.src;
+        video.load();
+      });
+
+      // Draw the video frame
+      const { sx, sy, sw, sh, dx, dy, dw, dh } = this.calculateObjectFit(
+        video.videoWidth,
+        video.videoHeight,
+        element.x,
+        element.y,
+        element.width,
+        element.height,
+        element.objectFit || 'cover'
+      );
+
+      this.ctx.drawImage(video, sx, sy, sw, sh, dx, dy, dw, dh);
+
+    } catch (error) {
+      console.error('Error rendering video element:', error);
+      // Fallback to placeholder
+      this.ctx.fillStyle = '#000000';
+      this.ctx.fillRect(element.x, element.y, element.width, element.height);
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.font = '24px Arial';
+      this.ctx.textAlign = 'center';
+      this.ctx.textBaseline = 'middle';
+      this.ctx.fillText(
+        'VIDEO',
+        element.x + element.width / 2,
+        element.y + element.height / 2
+      );
+    }
+  }
   private calculateObjectFit(
     imgWidth: number,
     imgHeight: number,
