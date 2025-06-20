@@ -1,8 +1,8 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { usePathname } from "next/navigation";
-import { useState, useCallback } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useState, useCallback, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,6 +47,19 @@ export function FeedbackWidget() {
   const [screenshot, setScreenshot] = useState<string | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Auto-open feedback modal if showFeedback=true is in the URL
+  useEffect(() => {
+    const showFeedback = searchParams?.get('showFeedback') === 'true';
+    if (showFeedback) {
+      setOpen(true);
+      // Optional: Clean up the URL without causing a page reload
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete('showFeedback');
+      window.history.replaceState({}, '', newUrl.toString());
+    }
+  }, [searchParams]);
 
   const {
     register,
