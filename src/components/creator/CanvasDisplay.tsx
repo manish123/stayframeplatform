@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { useTemplateStore } from '@/store/templateStore';
 import { 
@@ -44,8 +44,17 @@ const CanvasDisplay = React.forwardRef<HTMLDivElement, CanvasDisplayProps>(({
 }, forwardedRef) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  
+  // Use separate selectors to prevent unnecessary re-renders
   const setSelectedElement = useTemplateStore((state) => state.setSelectedElement);
+  const updateElementProperty = useTemplateStore((state) => state.updateElementProperty);
   const [isInitialRender, setIsInitialRender] = useState(true);
+  
+  // Drag state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
+  const [elementStartPos, setElementStartPos] = useState({ x: 0, y: 0 });
+  const [draggedElement, setDraggedElement] = useState<AnyCanvasElement | null>(null);
 
   const updateSize = useCallback(
     debounce(() => {
@@ -181,30 +190,111 @@ useEffect(() => {
     ...style, // Any additional styles from props applied here
   };
 
+  // Handle element selection
   const handleElementClick = (element: AnyCanvasElement, e: React.MouseEvent) => {
     e.stopPropagation();
+    // Don't change selection if we're dragging or if it's a watermark
+    if (isDragging || element.type === 'watermark') {
+      return;
+    }
     setSelectedElement(element);
     if (onSelectElement) {
       onSelectElement(element);
-      // Element clicked
-
     }
   };
 
   const handleCanvasClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSelectedElement(null);
-    if (onSelectElement) {
-      onSelectElement(null);
-      // Canvas background clicked (element deselected)
-
+    // Don't deselect if we're dragging
+    if (!isDragging && e.target === e.currentTarget) {
+      setSelectedElement(null);
+      if (onSelectElement) {
+        onSelectElement(null);
+      }
     }
   };
+
+  // Handle mouse down on draggable element
+  const handleMouseDown = (e: React.MouseEvent, element: AnyCanvasElement) => {
+    // Only allow dragging text elements, not watermarks
+    if (element.type !== 'text') return;
+    
+    e.stopPropagation();
+    setIsDragging(true);
+    setDraggedElement(element);
+    setDragStartPos({ x: e.clientX, y: e.clientY });
+    setElementStartPos({ x: element.x, y: element.y });
+    
+    // Select the element if not already selected
+    if (element.id !== selectedElementId) {
+      setSelectedElement(element);
+      if (onSelectElement) {
+        onSelectElement(element);
+      }
+    }
+  };
+
+  // Memoize the mouse move handler with proper dependencies
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging || !draggedElement) return;
+    
+    const dx = (e.clientX - dragStartPos.x) / contentScale;
+    const dy = (e.clientY - dragStartPos.y) / contentScale;
+    
+    // Calculate new position with boundary constraints
+    const maxX = sourceWidth - draggedElement.width;
+    const maxY = sourceHeight - draggedElement.height;
+    
+    const newX = Math.max(0, Math.min(maxX, elementStartPos.x + dx));
+    const newY = Math.max(0, Math.min(maxY, elementStartPos.y + dy));
+    
+    // Only update if position actually changed
+    if (newX !== draggedElement.x) {
+      updateElementProperty(draggedElement.id, 'x', newX);
+    }
+    if (newY !== draggedElement.y) {
+      updateElementProperty(draggedElement.id, 'y', newY);
+    }
+  }, [
+    isDragging, 
+    draggedElement, 
+    dragStartPos, 
+    elementStartPos, 
+    contentScale, 
+    sourceWidth, 
+    sourceHeight,
+    updateElementProperty
+  ]);
+
+  // Handle mouse up to end dragging
+  const handleMouseUp = useCallback(() => {
+    if (isDragging) {
+      setIsDragging(false);
+      setDraggedElement(null);
+    }
+  }, [isDragging]);
+
+  // Add/remove global event listeners for dragging
+  useEffect(() => {
+    if (!isDragging) return;
+    
+    const handleMove = (e: MouseEvent) => handleMouseMove(e);
+    const handleUp = () => handleMouseUp();
+    
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleUp);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMove);
+      document.removeEventListener('mouseup', handleUp);
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+
   // CanvasDisplay.tsx
   const renderElement = (element: AnyCanvasElement) => {
     if (!element) return null;
 
     const isSelected = element.id === selectedElementId;
+    const isBeingDragged = isDragging && draggedElement?.id === element.id;
 
     let dynamicStyle: React.CSSProperties = {
       position: 'absolute',
@@ -217,9 +307,12 @@ useEffect(() => {
       transformOrigin: 'center center',
       border: isSelected ? '2px dashed #3b82f6' : 'none',
       outline: isSelected ? '2px solid rgba(59, 130, 246, 0.5)' : 'none',
-      cursor: 'pointer',
+      cursor: element.type === 'watermark' ? 'not-allowed' : (element.type === 'text' ? 'move' : 'pointer'),
       boxSizing: 'border-box',
-      transition: 'all 0.2s ease-in-out',
+      transition: isDragging ? 'none' : 'all 0.2s ease-in-out',
+      userSelect: 'none',
+      zIndex: isBeingDragged ? 1000 : 'auto',
+      pointerEvents: element.type === 'watermark' ? 'none' : 'auto',
     };
 
     switch (element.type) {
@@ -249,9 +342,24 @@ useEffect(() => {
             key={element.id}
             style={dynamicStyle}
             onClick={(e) => handleElementClick(element, e)}
+            onMouseDown={(e) => handleMouseDown(e, element)}
             className="select-none"
           >
             {textElement.content}
+            {isSelected && (
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  pointerEvents: 'none',
+                  border: isBeingDragged ? '2px dashed rgba(255, 255, 255, 0.7)' : 'none',
+                  backgroundColor: isBeingDragged ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+                }}
+              />
+            )}
           </div>
         );
       }
@@ -345,9 +453,27 @@ useEffect(() => {
       {/* This is the main canvas display area, which is centered and scaled */}
       <div
         className="relative bg-background text-foreground rounded-lg shadow-xl"
-        style={canvasDisplayAreaStyle} // Use the new style object for the main canvas div
+        style={{
+          ...canvasDisplayAreaStyle,
+          position: 'relative',
+        }}
         onClick={handleCanvasClick}
       >
+        {/* Canvas boundary indicator when dragging */}
+        {isDragging && draggedElement && (
+          <div 
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              width: '100%',
+              height: '100%',
+              border: '1px dashed rgba(255, 255, 255, 0.3)',
+              pointerEvents: 'none',
+              zIndex: 999,
+            }}
+          />
+        )}
         {/* Render elements, sorted by zIndex for correct layering if implemented */}
         {template.elements.map(renderElement)}
       </div>
