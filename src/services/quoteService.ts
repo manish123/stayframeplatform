@@ -51,7 +51,7 @@ export const fetchQuotes = async (
 export const fetchThemes = async (): Promise<string[]> => {
   try {
     // Return all unique theme names
-    const themeNames = [...new Set(quotesData.themes.map(theme => theme.name))];
+    const themeNames = Array.from(new Set(quotesData.themes.map(theme => theme.name)));
     return themeNames;
   } catch (error) {
     console.error('Error fetching themes:', error);

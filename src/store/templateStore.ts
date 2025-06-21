@@ -40,7 +40,7 @@ export const useTemplateStore = create<TemplateState>()(
     set((state) => {
       if (!state.selectedTemplate) return state;
 
-      const updatedElements = state.selectedTemplate.elements.map((element) => {
+      const updatedElements = state.selectedTemplate.elements.map((element: AnyCanvasElement) => {
         if (element.id === elementId) {
           let validatedValue = value;
           if (propertyName === 'opacity') {
@@ -62,7 +62,7 @@ export const useTemplateStore = create<TemplateState>()(
       const updatedTemplate = cloneDeep(state.selectedTemplate);
       updatedTemplate.elements = updatedElements as AnyCanvasElement[];
 
-      const updatedSelectedElement = updatedElements.find((el) => el.id === elementId) || null;
+      const updatedSelectedElement = updatedElements.find((el: AnyCanvasElement) => el.id === elementId) || null;
 
       return {
         selectedTemplate: updatedTemplate,
@@ -77,7 +77,7 @@ export const useTemplateStore = create<TemplateState>()(
       if (!state.selectedTemplate) return state;
 
       const updatedElements = state.selectedTemplate.elements.filter(
-        (el) => el.id !== elementId
+        (el: AnyCanvasElement) => el.id !== elementId
       );
 
       const newSelectedElementId = state.selectedElementId === elementId ? null : state.selectedElementId;
@@ -103,7 +103,7 @@ export const useTemplateStore = create<TemplateState>()(
       const scaleY = newDimensions.height / oldDimensions.height;
       const contentScale = Math.min(scaleX, scaleY);
 
-      const scaledElements = state.selectedTemplate.elements.map((element) => {
+      const scaledElements = state.selectedTemplate.elements.map((element: AnyCanvasElement) => {
         const newElement = {
           ...element,
           x: element.x * scaleX,

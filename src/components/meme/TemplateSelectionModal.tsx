@@ -84,7 +84,7 @@ export function TemplateSelectionModal({
                     <h3 className="font-medium text-foreground">{template.name}</h3>
                     {template.tags && (
                       <div className="flex flex-wrap gap-1 mt-2">
-                        {template.tags.slice(0, 3).map((tag) => (
+                        {template.tags.slice(0, 3).map((tag: string) => (
                           <span 
                             key={tag} 
                             className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full"

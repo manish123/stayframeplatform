@@ -82,7 +82,7 @@ export function detectBrowser() {
     languages: navigator.languages,
     platform: navigator.platform,
     cookiesEnabled: navigator.cookieEnabled,
-    doNotTrack: navigator.doNotTrack === '1' || window.doNotTrack === '1',
+    doNotTrack: (navigator as Navigator).doNotTrack === '1' || (window as Window & { doNotTrack?: string }).doNotTrack === '1',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     localStorage: typeof window.localStorage !== 'undefined',
     sessionStorage: typeof window.sessionStorage !== 'undefined',
@@ -239,10 +239,22 @@ export async function getGeolocation(): Promise<GeolocationPosition | null> {
  * Gets the battery status if available
  * @returns A promise that resolves to the battery status or null if not supported
  */
+// Define BatteryManager interface locally since it's not in the global scope
+interface BatteryManager extends EventTarget {
+  charging: boolean;
+  chargingTime: number;
+  dischargingTime: number;
+  level: number;
+  onchargingchange: ((this: BatteryManager, ev: Event) => any) | null;
+  onchargingtimechange: ((this: BatteryManager, ev: Event) => any) | null;
+  ondischargingtimechange: ((this: BatteryManager, ev: Event) => any) | null;
+  onlevelchange: ((this: BatteryManager, ev: Event) => any) | null;
+}
+
 export async function getBatteryStatus(): Promise<BatteryManager | null> {
   if ('getBattery' in navigator) {
     try {
-      return await (navigator as any).getBattery();
+      return await (navigator as Navigator & { getBattery: () => Promise<BatteryManager> }).getBattery();
     } catch (error) {
       console.error('Error getting battery status:', error);
       return null;

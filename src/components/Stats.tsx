@@ -13,6 +13,7 @@ import {
   Globe,
   Zap
 } from 'lucide-react';
+import styles from './Stats.module.css';
 
 export function Stats() {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
@@ -52,10 +53,10 @@ export function Stats() {
   return (
     <section 
       ref={ref} 
-      className="relative overflow-hidden border-t border-border/50 py-20 bg-gradient-to-br from-background via-background to-muted/20"
+      className={styles.statsSection}
     >
       {/* Background decoration */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] dark:opacity-[0.05]" />
+      <div className={styles.bgGridPattern} />
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
       
@@ -164,14 +165,7 @@ export function Stats() {
         </motion.div>
       </div>
 
-      <style jsx>{`
-        .bg-grid-pattern {
-          background-image: 
-            linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
-          background-size: 20px 20px;
-        }
-      `}</style>
+
     </section>
   );
 }

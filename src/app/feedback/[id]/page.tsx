@@ -23,7 +23,7 @@ import {
   X as XIcon,
   Trash2
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import Button from "@/components/ui/Button.temp";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/Input";
@@ -137,7 +137,7 @@ export default function FeedbackDetailPage() {
   const [status, setStatus] = useState<FeedbackStatus>('Open');
   const [priority, setPriority] = useState<FeedbackPriority>('medium');
   const [note, setNote] = useState('');
-  const [noteType, setNoteType] = useState<NoteType>('comment');
+  const [noteType, setNoteType] = useState<NoteType>('Comment');
   const [expanded, setExpanded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -421,15 +421,15 @@ export default function FeedbackDetailPage() {
                                   </div>
                                   <div className="mt-2">
                                     <Badge
-                                      variant={log.noteType === 'decision' ? 'default' : 'outline'}
+                                      variant={log.noteType === 'Decision' ? 'default' : 'outline'}
                                       className={cn(
                                         'text-xs',
-                                        log.noteType === 'decision' ? 'bg-blue-100 text-blue-800' : '',
-                                        log.noteType === 'update' ? 'bg-purple-100 text-purple-800' : ''
+                                        log.noteType === 'Decision' ? 'bg-blue-100 text-blue-800' : '',
+                                        log.noteType === 'Update' ? 'bg-purple-100 text-purple-800' : ''
                                       )}
                                     >
-                                      {log.noteType === 'comment' ? 'Comment' : 
-                                       log.noteType === 'update' ? 'Update' : 'Decision'}
+                                      {log.noteType === 'Comment' ? 'Comment' : 
+                                       log.noteType === 'Update' ? 'Update' : 'Decision'}
                                     </Badge>
                                   </div>
                                 </div>

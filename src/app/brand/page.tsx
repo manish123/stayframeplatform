@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/Button.temp';
 import {
   Card, 
   CardHeader, 
@@ -118,9 +118,9 @@ export default function BrandPage() {
           <div className="p-6 bg-card rounded-lg shadow space-y-4">
             <h3 className="text-xl font-medium mb-2 text-card-foreground">Button Variants</h3>
             <div className="flex flex-wrap gap-4 items-center">
-              <Button variant="primary">Primary Button</Button>
+              <Button variant="default">Default Button</Button>
               <Button variant="secondary">Secondary Button</Button>
-              <Button variant="accent">Accent Button</Button>
+              <Button variant="secondary">Accent Button</Button>
               <Button variant="destructive">Destructive Button</Button>
               <Button variant="ghost">Ghost Button</Button>
               <Button variant="link">Link Button</Button>
@@ -128,15 +128,15 @@ export default function BrandPage() {
             </div>
             <h3 className="text-xl font-medium mt-6 mb-2 text-card-foreground">Button Sizes (Example with Primary)</h3>
             <div className="flex flex-wrap gap-4 items-center">
-              <Button variant="primary" size="sm">Small Button</Button>
-              <Button variant="primary" size="default">Default Button</Button>
-              <Button variant="primary" size="lg">Large Button</Button>
-              <Button variant="primary" size="icon">Icon</Button> {/* Add an icon inside if you have one */}
+              <Button variant="default" size="sm">Small Button</Button>
+              <Button variant="default" size="default">Default Button</Button>
+              <Button variant="default" size="lg">Large Button</Button>
+              <Button variant="default" size="icon">Icon</Button> {/* Add an icon inside if you have one */}
             </div>
              <h3 className="text-xl font-medium mt-6 mb-2 text-card-foreground">Button States (Example with Primary)</h3>
             <div className="flex flex-wrap gap-4 items-center">
-              <Button variant="primary">Default</Button>
-              <Button variant="primary" disabled>Disabled</Button>
+              <Button variant="default">Default</Button>
+              <Button variant="default" disabled>Disabled</Button>
               {/* Add hover/active states if demonstrable or describe them */}
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function BrandPage() {
                 <p>{cardContentSample.description}</p>
               </CardContent>
               <CardFooter>
-                <Button variant="primary">Action</Button>
+                <Button variant="default">Action</Button>
               </CardFooter>
             </Card>
             <Card>

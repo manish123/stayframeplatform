@@ -181,14 +181,11 @@ export default function ReelGenerator({
 
   // Handle template selection
   const handleSelectTemplate = useCallback((template: BaseTemplate) => {
-    console.log('1. Template selected:', template.name);
-    
     // Close the template modal first
     setIsTemplateModalOpen(false);
     if (onTemplateModalClose) onTemplateModalClose();
     
     // Update the template and reset any selected element
-    console.log('2. Setting selected template and resetting element selection');
     setSelectedTemplate(template);
     setSelectedElement(null);
     
@@ -203,27 +200,21 @@ export default function ReelGenerator({
     });
 
     // Check for video elements that need media
-    const videoElements = template.elements?.filter(el => el.type === 'video');
-    
-    console.log('3. Video elements found:', videoElements?.length || 0);
+    const videoElements = template.elements?.filter((el: AnyCanvasElement) => el.type === 'video');
     
     if (videoElements && videoElements.length > 0) {
       // If there are video elements, select the first one
       const firstVideo = videoElements[0];
-      console.log('4. Setting selected element to first video element');
       
       // Use a small delay to ensure state updates before opening the modal
       const openVideoModal = () => {
-        console.log('5. Setting selected element and opening video modal');
         setSelectedElement(firstVideo);
         setIsVideoModalOpen(true);
       };
       
       // Use requestAnimationFrame to ensure the modal opens after state updates
-      console.log('6. Scheduling modal open');
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          console.log('7. Executing modal open');
           openVideoModal();
         });
       });

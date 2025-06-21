@@ -98,13 +98,6 @@ export const authConfig: NextAuthConfig = {
         session.user.id = user.id;
         // Ensure role is always set, default to 'user' if not present
         session.user.role = user.role || 'user';
-        
-        // Log session for debugging (remove in production)
-        console.log('Session data:', {
-          id: user.id,
-          email: user.email,
-          role: session.user.role
-        });
       }
       return session;
     },

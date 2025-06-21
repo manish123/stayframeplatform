@@ -1,0 +1,21 @@
+.bgGridPattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.statsSection {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  padding: 5rem 0;
+  background: linear-gradient(
+    to bottom right,
+    var(--background),
+    var(--background),
+    var(--muted-foreground/0.2)
+  );
+}

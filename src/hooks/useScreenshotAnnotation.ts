@@ -19,18 +19,22 @@ export function useScreenshotAnnotation() {
       
       // Dynamically import html2canvas only when needed
       const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(document.documentElement, {
+      // Using type assertion for html2canvas options to avoid type issues
+      const options = {
         logging: false,
         useCORS: true,
         scale: 0.5, // Reduce size for better performance
-        onclone: (document) => {
+        onclone: (clonedDoc: Document) => {
           // Hide the feedback widget during screenshot
-          const widget = document.querySelector('.feedback-widget');
+          const widget = clonedDoc.querySelector('.feedback-widget');
           if (widget) {
             (widget as HTMLElement).style.display = 'none';
           }
+          return clonedDoc;
         },
-      });
+      } as const;
+      
+      const canvas = await html2canvas(document.documentElement, options);
       
       const screenshotDataUrl = canvas.toDataURL('image/png');
       setScreenshot(screenshotDataUrl);

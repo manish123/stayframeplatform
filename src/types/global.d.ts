@@ -1,3 +1,30 @@
+// This file ensures TypeScript understands our path aliases and provides type declarations for browser-specific APIs
+
+// Extend the Window interface to include doNotTrack
+declare global {
+  interface Window {
+    doNotTrack?: string;
+  }
+
+  // Define BatteryManager interface
+  interface BatteryManager extends EventTarget {
+    charging: boolean;
+    chargingTime: number;
+    dischargingTime: number;
+    level: number;
+    onchargingchange: ((this: BatteryManager, ev: Event) => any) | null;
+    onchargingtimechange: ((this: BatteryManager, ev: Event) => any) | null;
+    ondischargingtimechange: ((this: BatteryManager, ev: Event) => any) | null;
+    onlevelchange: ((this: BatteryManager, ev: Event) => any) | null;
+  }
+
+  // Extend Navigator to include getBattery
+  interface Navigator {
+    getBattery?: () => Promise<BatteryManager>;
+    doNotTrack?: string;
+  }
+}
+
 // This file ensures TypeScript understands our path aliases
 declare module '@/store/templateStore' {
   import { TemplateState } from '../../store/templateStore';
@@ -18,7 +45,10 @@ declare module '@/types/templates' {
     TextCanvasElement, 
     ImageCanvasElement, 
     VideoCanvasElement, 
-    WatermarkCanvasElement 
+    ShapeCanvasElement,
+    WatermarkCanvasElement,
+    BaseTemplate,
+    CanvasDimensions
   } from '../../types/templates';
   
   export {
@@ -26,7 +56,10 @@ declare module '@/types/templates' {
     TextCanvasElement,
     ImageCanvasElement,
     VideoCanvasElement,
-    WatermarkCanvasElement
+    ShapeCanvasElement,
+    WatermarkCanvasElement,
+    BaseTemplate,
+    CanvasDimensions
   };
 }
 

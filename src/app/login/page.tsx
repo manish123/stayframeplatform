@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/Button.temp';
 import { Card } from '@/components/ui/Card';
 import { Spinner, Google } from '@/components/ui/Icons';
 import { useToast } from '@/components/ui/use-toast';
@@ -42,13 +42,10 @@ export default function LoginPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      console.log('Initiating Google sign-in with callback URL:', callbackUrl);
       const result = await signIn('google', { 
         callbackUrl,
         redirect: false // We'll handle the redirect manually
       });
-      
-      console.log('Sign in result:', result);
       
       if (result?.error) {
         console.error('Google sign in error:', result.error);

@@ -52,7 +52,6 @@ export function CookieConsent() {
   const initializeCookies = (prefs: CookiePreferences) => {
     // This is where you would initialize your analytics/marketing cookies
     // based on user preferences
-    console.log('Initializing cookies with preferences:', prefs);
     
     // Example: Initialize Google Analytics if analytics is enabled
     if (prefs.analytics && typeof window !== 'undefined' && !window['ga-disable-GA_MEASUREMENT_ID']) {
