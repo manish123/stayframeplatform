@@ -19,18 +19,13 @@ export function MobileHeader({
   rightMenuOpen,
   title,
 }: MobileHeaderProps) {
-  console.log('MobileHeader: leftMenuOpen:', leftMenuOpen, 'rightMenuOpen:', rightMenuOpen); // Debug
-
   return (
     <header className="lg:hidden fixed top-0 left-0 right-0 z-[60] bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between h-16 px-4">
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => {
-            console.log('Left menu button clicked'); // Debug
-            onLeftMenuClick();
-          }}
+          onClick={onLeftMenuClick}
           aria-label={leftMenuOpen ? 'Close Tools & Templates' : 'Open Tools & Templates'}
           className={leftMenuOpen ? 'text-blue-500' : ''}
         >
@@ -42,10 +37,7 @@ export function MobileHeader({
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => {
-            console.log('Right menu button clicked'); // Debug
-            onRightMenuClick();
-          }}
+          onClick={onRightMenuClick}
           aria-label={rightMenuOpen ? 'Close Element Inspector' : 'Open Element Inspector'}
           className={rightMenuOpen ? 'text-blue-500' : ''}
         >

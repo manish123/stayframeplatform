@@ -10,7 +10,6 @@ export async function initializeStats() {
       await prisma.platformStats.create({
         data: { id: 'platform_stats' }
       });
-      console.log('Initialized platform stats');
     }
   } catch (error) {
     console.error('Error initializing platform stats:', error);

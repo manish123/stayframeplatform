@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { AnyCanvasElement } from '@/types/templates';
 import dynamic from 'next/dynamic';
 import { Palette, Grid, Image, Edit3, Eye, Download, Menu, X, Layers, Search, ChevronDown, Monitor, Smartphone, LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -182,7 +183,7 @@ export default function QuoteGeneratorSidebar() {
   const handleImageSelect = (imageUrl: string) => {
     if (!selectedTemplate) return;
     
-    const imageElement = selectedTemplate.elements.find(el => el.type === 'image');
+    const imageElement = selectedTemplate.elements.find((el: AnyCanvasElement) => el.type === 'image');
     if (imageElement) {
       updateElementProperty(imageElement.id, 'src', imageUrl);
     }
@@ -192,7 +193,7 @@ export default function QuoteGeneratorSidebar() {
   const handleQuoteSelect = (quote: FlattenedQuote) => {
     if (!selectedTemplate) return;
     
-    const textElement = selectedTemplate.elements.find(el => el.type === 'text');
+    const textElement = selectedTemplate.elements.find((el: AnyCanvasElement) => el.type === 'text');
     if (textElement) {
       updateElementProperty(textElement.id, 'content', `"${quote.quote}"`);
     }

@@ -194,43 +194,20 @@ export async function PATCH(
 
 // POST /api/feedback - Create new feedback
 export async function POST(request: Request) {
-  console.log('=== New Feedback Request ===');
-  console.log('Request URL:', request.url);
-  
   try {
-    // Log request headers for debugging
-    const headers: Record<string, string> = {};
-    request.headers.forEach((value, key) => {
-      headers[key] = value;
-    });
-    console.log('Request Headers:', JSON.stringify(headers, null, 2));
-    
     // Get session if user is authenticated
     const session = await auth().catch(() => null);
     const isAuthenticated = !!session?.user;
-    
-    console.log(`User is ${isAuthenticated ? 'authenticated' : 'not authenticated'}`);
-    
-    if (isAuthenticated) {
-      console.log('✅ Authenticated User:', {
-        id: session.user.id,
-        email: session.user.email,
-        role: session.user.role
-      });
-    } else {
-      console.log('ℹ️ Anonymous user submitting feedback');
-    }
 
     // Parse and validate request body
     let body;
     try {
       const bodyText = await request.text();
-      console.log('Raw request body:', bodyText.substring(0, 500) + (bodyText.length > 500 ? '...' : ''));
       
       try {
         body = JSON.parse(bodyText);
       } catch (parseError) {
-        console.error('❌ Error parsing JSON:', parseError);
+        console.error('Error parsing JSON:', parseError);
         return NextResponse.json(
           { 
             success: false,
@@ -241,11 +218,6 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
-      
-      console.log('✅ Request Body:', JSON.stringify({
-        ...body,
-        screenshot: body.screenshot ? (typeof body.screenshot === 'string' ? '[screenshot data]' : '[screenshot object]') : 'none'
-      }, null, 2));
     } catch (error) {
       console.error('❌ Error reading request body:', error);
       return NextResponse.json(
@@ -260,14 +232,13 @@ export async function POST(request: Request) {
     }
     
     // Validate against schema
-    console.log('Validating request body...');
     let parsed;
     try {
       parsed = feedbackSchema.safeParse(body);
       
       if (!parsed.success) {
         const formattedErrors = parsed.error.format();
-        console.error('❌ Validation errors:', JSON.stringify(formattedErrors, null, 2));
+        console.error('Validation errors:', formattedErrors);
         
         return NextResponse.json(
           { 
@@ -281,7 +252,7 @@ export async function POST(request: Request) {
         );
       }
     } catch (validationError) {
-      console.error('❌ Error during validation:', validationError);
+      console.error('Error during validation:', validationError);
       return NextResponse.json(
         {
           success: false,
@@ -299,48 +270,34 @@ export async function POST(request: Request) {
     let screenshotUrl: string | undefined;
 
     if (consent && screenshot) {
-      console.log('📸 Processing screenshot upload...');
       try {
-        if (typeof screenshot !== 'string' || !screenshot.startsWith('data:image/')) {
-          console.warn('⚠️ Invalid screenshot format, skipping upload');
-        } else {
+        if (typeof screenshot === 'string' && screenshot.startsWith('data:image/')) {
           const blobName = `screenshots/feedback-${Date.now()}.png`;
-          console.log(`Uploading screenshot to Vercel Blob as: ${blobName}`);
           
           // Convert base64 to buffer
           const base64Data = screenshot.replace(/^data:image\/png;base64,/, '');
           const buffer = Buffer.from(base64Data, 'base64');
           
-          try {
-            if (!process.env.BLOB_READ_WRITE_TOKEN) {
-              throw new Error('BLOB_READ_WRITE_TOKEN is not set in environment variables');
-            }
-            
-            const blob = await put(
-              blobName,
-              buffer,
-              {
-                access: 'public',
-                contentType: 'image/png',
-                addRandomSuffix: true,
-                token: process.env.BLOB_READ_WRITE_TOKEN
-              }
-            );
-            screenshotUrl = blob.url;
-            console.log('✅ Screenshot uploaded successfully:', screenshotUrl);
-          } catch (error) {
-            console.error('❌ Error uploading screenshot:', error);
-            // Continue without screenshot if upload fails
-            console.log('⚠️ Continuing without screenshot due to upload error');
+          if (!process.env.BLOB_READ_WRITE_TOKEN) {
+            throw new Error('BLOB_READ_WRITE_TOKEN is not set in environment variables');
           }
+          
+          const blob = await put(
+            blobName,
+            buffer,
+            {
+              access: 'public',
+              contentType: 'image/png',
+              addRandomSuffix: true,
+              token: process.env.BLOB_READ_WRITE_TOKEN
+            }
+          );
+          screenshotUrl = blob.url;
         }
       } catch (error) {
-        console.error('❌ Error processing screenshot:', error);
+        console.error('Error processing screenshot:', error);
         // Continue without screenshot if there's an error
-        console.log('⚠️ Continuing without screenshot due to processing error');
       }
-    } else {
-      console.log('ℹ️ No screenshot or consent not given');
     }
 
     // Get user agent for metadata
@@ -357,11 +314,8 @@ export async function POST(request: Request) {
       timestamp: new Date().toISOString(),
       userAgent: userAgent,
     };
-    
-    console.log('📊 Captured metadata:', JSON.stringify(metadata, null, 2));
 
     // Create the feedback in database
-    console.log('💾 Saving feedback to database...');
     try {
       // Prepare feedback data
       const feedbackData: any = {
@@ -385,14 +339,7 @@ export async function POST(request: Request) {
         feedbackData.screenshot = screenshotUrl;
       }
       
-      console.log('Creating feedback with data:', JSON.stringify({
-        ...feedbackData,
-        metadata: '[metadata]',
-        screenshot: feedbackData.screenshot ? '[screenshot-url]' : 'none',
-        description: feedbackData.description.length === description.length 
-          ? `[${description.length} chars]` 
-          : `[TRUNCATED from ${description.length} to ${feedbackData.description.length} chars]`
-      }, null, 2));
+      // Removed debug logging of feedback data
 
       // Validate required fields
       if (!feedbackData.title || !feedbackData.description) {
@@ -413,8 +360,6 @@ export async function POST(request: Request) {
         },
       });
 
-      console.log('✅ Feedback created successfully with ID:', feedback.id);
-      
       // Prepare response data with user-friendly message
       const responseData = {
         success: true,
@@ -428,13 +373,11 @@ export async function POST(request: Request) {
           note: 'Consider signing in next time to track your feedback history.'
         })
       };
-
-      console.log('✅ Success response:', JSON.stringify(responseData, null, 2));
       
       return NextResponse.json(responseData, { status: 201 });
       
     } catch (dbError) {
-      console.error('❌ Database error:');
+      console.error('Database error:');
       
       let errorDetails = {};
       
@@ -448,7 +391,7 @@ export async function POST(request: Request) {
           } : {})
         };
         
-        console.error('Error details:', JSON.stringify(errorDetails, null, 2));
+        console.error('Error details:', errorDetails);
         
         // Handle common Prisma errors
         if (dbError.message.includes('Unique constraint')) {
@@ -491,8 +434,7 @@ export async function POST(request: Request) {
       );
     }
   } catch (error) {
-    console.error('❌ Error in feedback submission:');
-    console.error(error);
+    console.error('Error in feedback submission:', error);
     
     // Default error response
     let errorMessage = 'An unexpected error occurred';

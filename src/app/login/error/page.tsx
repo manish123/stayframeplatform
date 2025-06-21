@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/Button.temp';
 import { Card } from '@/components/ui/Card';
 import Link from 'next/link';
 

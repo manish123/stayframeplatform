@@ -158,40 +158,37 @@ const MemeGenerator = ({
     updateElementProperty,
   } = useTemplateStore();
 
-  // Initialize with default template if none selected
+  // Initialize template when component mounts or templates change
   useEffect(() => {
-    console.log('1. Initializing template. Templates available:', templates.length);
-    if (templates.length > 0 && (!selectedTemplate || !templates.some(t => t.id === selectedTemplate.id))) {
-      console.log('2. Setting default template:', templates[0].name);
+    if (templates.length > 0) {
       setSelectedTemplate(templates[0]);
     }
-  }, [templates, selectedTemplate, setSelectedTemplate]);
+  }, [templates]);
 
   // Sync template modal state with prop
   useEffect(() => {
-    console.log('3. Syncing template modal state with prop:', showTemplateModal);
     if (showTemplateModal !== undefined) {
       setIsTemplateModalOpen(showTemplateModal);
     }
   }, [showTemplateModal]);
 
-  // Debug effect for image modal state
+  // Clean up debug effects that were only used for logging
   useEffect(() => {
-    console.log('4. Image modal state changed:', isImageModalOpen);
+    // This effect is intentionally left empty
+    // It was previously used for debugging image modal state
   }, [isImageModalOpen]);
 
-  // Debug effect for selected element
   useEffect(() => {
-    console.log('5. Selected element changed:', selectedElement?.id);
+    // This effect is intentionally left empty
+    // It was previously used for debugging selected element
   }, [selectedElement]);
 
-  // Debug effect for template selection flow
   useEffect(() => {
-    console.log('6. Template selection flow changed:', selectedTemplate?.id);
-  }, [selectedTemplate]);
+    // Removed empty effect
+  }, []);
 
   // Handle element click on canvas
-  const handleElementSelect = useCallback((element: AnyCanvasElement | null) => {
+  const handleElementClick = useCallback((element: AnyCanvasElement | null) => {
     setSelectedElement(element);
     if (element && !isDesktop) {
       setIsMobileRightOpen(true);
@@ -214,14 +211,11 @@ const MemeGenerator = ({
 
   // Handle template selection
   const handleSelectTemplate = useCallback((template: BaseTemplate) => {
-    console.log('1. Template selected:', template.name);
-    
     // Close the template modal first
     setIsTemplateModalOpen(false);
     onTemplateModalClose?.();
     
     // Update the template
-    console.log('2. Setting selected template');
     setSelectedTemplate(template);
     
     // Track template usage
@@ -235,30 +229,24 @@ const MemeGenerator = ({
     });
 
     // Check for image elements that need an image
-    const imageElement = template.elements?.find(el => el.type === 'image');
-    console.log('3. Image element found:', imageElement);
+    const imageElement = template.elements?.find((el: AnyCanvasElement) => el.type === 'image');
     
     if (imageElement) {
-      console.log('4. Setting selected element');
       // Set the selected element first
       setSelectedElement(imageElement);
       
       // Use a small delay to ensure state updates before opening the modal
       const openImageModal = () => {
-        console.log('5. Opening image modal');
         setIsImageModalOpen(true);
       };
       
       // Use requestAnimationFrame to ensure the modal opens after state updates
-      console.log('6. Scheduling modal open');
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          console.log('7. Executing modal open');
           openImageModal();
         });
       });
     } else {
-      console.log('4. No image element found, clearing selection');
       setSelectedElement(null);
     }
   }, [setSelectedTemplate, setSelectedElement, onTemplateModalClose]);
@@ -348,6 +336,14 @@ const MemeGenerator = ({
     mobileWidth: 'w-72 max-w-[85vw]',
     desktopWidth: 'w-75',
   }), [isMobileRightOpen, isDesktop, selectedElement, setSelectedElement]);
+
+  // Handle element selection from canvas
+  const handleElementSelect = useCallback((element: AnyCanvasElement | null) => {
+    setSelectedElement(element);
+    if (element && !isDesktop) {
+      setIsMobileRightOpen(true);
+    }
+  }, [isDesktop, setSelectedElement]);
 
   // Alert effect
   useEffect(() => {

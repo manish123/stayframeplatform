@@ -666,11 +666,9 @@ export const PreviewModal = ({
 
   const handleVideoExport = async () => {
     if (isExporting || isVideoExporting) {
-      console.log('Export already in progress');
       return;
     }
 
-    console.log('Starting video export...');
     setIsExporting(true);
     setIsVideoExporting(true);
     setExportProgress(0);
@@ -801,7 +799,6 @@ export const PreviewModal = ({
       // Stop recording and wait for final data
       await new Promise<void>((resolve) => {
         recorder.onstop = () => {
-          console.log('Recorder stopped, chunks:', chunks.length);
           resolve();
         };
 

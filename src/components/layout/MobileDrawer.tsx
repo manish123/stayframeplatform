@@ -27,8 +27,6 @@ export function MobileDrawer({
   onTouchMove,
   onTouchEnd,
 }: MobileDrawerProps) {
-  console.log(`Rendering MobileDrawer: ${position}, isOpen: ${isOpen}`); // Debug
-
   return (
     <>
       {/* Backdrop */}

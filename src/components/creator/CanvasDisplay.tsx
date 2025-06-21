@@ -3,8 +3,15 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useTemplateStore } from '@/store/templateStore';
-import { BaseTemplate, AnyCanvasElement, TextCanvasElement, ImageCanvasElement, VideoCanvasElement, WatermarkCanvasElement } from '@/types/templates';
-import { debounce } from '@/utils/debounce'; // Import your debounce utility
+import { 
+  BaseTemplate, 
+  AnyCanvasElement, 
+  TextCanvasElement, 
+  ImageCanvasElement, 
+  VideoCanvasElement, 
+  WatermarkCanvasElement 
+} from '@/types/templates';
+import { debounce } from '@/utils/debounce';
 
 // In CanvasDisplay.tsx, update the CanvasDisplayProps interface:
 interface CanvasDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -105,23 +112,13 @@ useEffect(() => {
     const templateAspectRatio = sourceWidth / sourceHeight;
     const containerAspectRatio = containerSize.width / containerSize.height;
 
-    console.log('[CanvasDisplay] Aspect ratios:', {
-      templateAspectRatio,
-      containerAspectRatio,
-      uiScale,
-      containerSize,
-    });
-
     let baseScale = containerAspectRatio > templateAspectRatio
       ? (containerSize.height * 0.95) / sourceHeight
       : (containerSize.width * 0.95) / sourceWidth;
-    console.log('[CanvasDisplay] Base scale calculated:', { baseScale });
 
     finalScale = baseScale * uiScale;
     finalWidth = sourceWidth * finalScale;
     finalHeight = sourceHeight * finalScale;
-
-    console.log('[CanvasDisplay] Initial scaled dimensions:', { finalWidth, finalHeight, finalScale });
 
     const maxAllowedWidth = containerSize.width * 0.95;
     const maxAllowedHeight = containerSize.height * 0.95;
@@ -132,15 +129,7 @@ useEffect(() => {
       finalScale = Math.min(finalScale, scaleDownFactorWidth, scaleDownFactorHeight);
       finalWidth = sourceWidth * finalScale;
       finalHeight = sourceHeight * finalScale;
-      console.log('[CanvasDisplay] Dimensions capped:', {
-        maxAllowedWidth,
-        maxAllowedHeight,
-        scaleDownFactorWidth,
-        scaleDownFactorHeight,
-        finalScale,
-        finalWidth,
-        finalHeight,
-      });
+      // Dimensions capped to fit container
     }
 
     const minPixels = 400;
@@ -149,26 +138,13 @@ useEffect(() => {
       finalScale = Math.max(finalScale, minScaleFactor);
       finalWidth = sourceWidth * finalScale;
       finalHeight = sourceHeight * finalScale;
-      console.log('[CanvasDisplay] Dimensions adjusted for minimum size:', {
-        minPixels,
-        minScaleFactor,
-        finalScale,
-        finalWidth,
-        finalHeight,
-      });
+      // Dimensions adjusted for minimum size
     }
 
     const offsetX = Math.max(0, (containerSize.width - finalWidth) / 2); // Prevent negative offsets
     const offsetY = Math.max(0, (containerSize.height - finalHeight) / 2);
 
-    console.log('[CanvasDisplay] Final canvas size and position:', {
-      finalWidth,
-      finalHeight,
-      finalScale,
-      offsetX,
-      offsetY,
-      containerSize,
-    });
+
 
     return { width: finalWidth, height: finalHeight, scale: finalScale, offsetX, offsetY };
   }, [containerSize, sourceWidth, sourceHeight, uiScale]);
@@ -210,7 +186,7 @@ useEffect(() => {
     setSelectedElement(element);
     if (onSelectElement) {
       onSelectElement(element);
-      console.log(`[CanvasDisplay] Element clicked: ${element.name}, ID: ${element.id}`); // Add this line
+      // Element clicked
 
     }
   };
@@ -220,7 +196,7 @@ useEffect(() => {
     setSelectedElement(null);
     if (onSelectElement) {
       onSelectElement(null);
-      console.log('[CanvasDisplay] Canvas background clicked (element deselected)'); // Add this line
+      // Canvas background clicked (element deselected)
 
     }
   };
@@ -246,19 +222,10 @@ useEffect(() => {
       transition: 'all 0.2s ease-in-out',
     };
 
-    console.log('[CanvasDisplay] Rendering element:', {
-      id: element.id,
-      type: element.type,
-      scaledPosition: { left: element.x * contentScale, top: element.y * contentScale },
-      scaledSize: { width: element.width * contentScale, height: element.height * contentScale },
-      contentScale,
-    });
-
     switch (element.type) {
       case 'text':
       case 'watermark': {
         const textElement = element as TextCanvasElement | WatermarkCanvasElement;
-        if (!('content' in textElement)) return null;
         dynamicStyle = {
           ...dynamicStyle,
           fontSize: `${(textElement.fontSize || 16) * contentScale}px`,
@@ -277,12 +244,6 @@ useEffect(() => {
           wordBreak: 'break-word',
           padding: '0.25rem',
         };
-        console.log('[CanvasDisplay] Text element styles:', {
-          id: textElement.id,
-          fontSize: (textElement.fontSize || 16) * contentScale,
-          textAlign: textElement.textAlign,
-          content: textElement.content,
-        });
         return (
           <div
             key={element.id}

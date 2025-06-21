@@ -152,7 +152,7 @@ export default function QuoteGenerator() {
     }
   }, [selectedTemplate, setSelectedTemplate]);
 
-  const { track, isTracking: isTrackingTemplate } = useTrackTemplate();
+  const { track } = useTrackTemplate();
 
   useEffect(() => {
     // If no theme is selected, set the default theme
@@ -160,11 +160,7 @@ export default function QuoteGenerator() {
       const defaultTheme = availableThemes[0];
       setSelectedTheme(defaultTheme);
       // Track default theme selection
-      track({
-        type: 'quote',
-        templateId: 'default-theme',
-        templateName: 'Default Theme',
-      }).catch(console.error);
+      track('quote', 'default-theme', 'Default Theme').catch(console.error);
     }
   }, [availableThemes, track]);
 
@@ -185,7 +181,7 @@ export default function QuoteGenerator() {
       setTouchStart(null);
       
       // Track the template selection (fire and forget)
-      track('quote', template.id, template.name);
+      track('quote' as const, template.id, template.name);
     },
     [setSelectedTemplate, track, defaultQuoteTemplate]
   );
@@ -220,7 +216,7 @@ export default function QuoteGenerator() {
         return;
       }
 
-      const imageElement = template.elements.find((el) => el.type === 'image');
+      const imageElement = template.elements.find((el: AnyCanvasElement) => el.type === 'image');
       if (imageElement) {
         updateElementProperty(imageElement.id, 'src', imageUrl);
         showSuccess('Image updated successfully!');
@@ -241,9 +237,9 @@ export default function QuoteGenerator() {
         return;
       }
 
-      let targetTextElement = template.elements.find((el): el is TextCanvasElement => el.type === 'text' && el.id === 'quote-text');
+      let targetTextElement = template.elements.find((el: AnyCanvasElement): el is TextCanvasElement => el.type === 'text' && el.id === 'quote-text');
       if (!targetTextElement) {
-        targetTextElement = template.elements.find((el): el is TextCanvasElement => el.type === 'text');
+        targetTextElement = template.elements.find((el: AnyCanvasElement): el is TextCanvasElement => el.type === 'text');
       }
 
       if (targetTextElement) {

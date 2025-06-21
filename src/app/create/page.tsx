@@ -53,11 +53,9 @@ export default function CreatePage() {
 
   useEffect(() => {
     if (selectedTemplate) {
-      console.log('[CreatePage useEffect] Selected template updated:', selectedTemplate);
       setCurrentCanvasWidth(selectedTemplate.canvasDimensions.width);
       setCurrentCanvasHeight(selectedTemplate.canvasDimensions.height);
     } else {
-      console.log('[CreatePage useEffect] Selected template is null/undefined.');
       setCurrentCanvasWidth(DEFAULT_CANVAS_WIDTH);
       setCurrentCanvasHeight(DEFAULT_CANVAS_HEIGHT);
     }
@@ -68,8 +66,6 @@ export default function CreatePage() {
   }, []);
 
   const handleSelectTemplate = (template: BaseTemplate) => {
-    console.log('[CreatePage handleSelectTemplate] Selecting template:', template);
-    
     // Track the template selection
     trackTemplateClick({
       type: 'quote', // Default to 'quote' for now, adjust based on your app's structure
@@ -226,7 +222,7 @@ export default function CreatePage() {
             <div className="flex-grow min-h-0 w-full h-full relative mt-4"> 
               {selectedTemplate && currentCanvasWidth > 0 && currentCanvasHeight > 0 && (
                 <>
-                  {console.log('[CreatePage Main Canvas] Rendering with W:', currentCanvasWidth, 'H:', currentCanvasHeight, 'Template:', selectedTemplate.name)}
+
                   <div 
                     className="main-canvas-area flex-grow flex items-center justify-center p-4 rounded-md relative"
                   >
@@ -259,11 +255,6 @@ export default function CreatePage() {
       </aside>
 
       {/* Preview Modal */}
-      {(() => {
-        // This console.log is for debugging the state before rendering PreviewModal
-        console.log('[CreatePage Preview Check] isPreviewModalOpen:', isPreviewModalOpen, 'selectedTemplate:', !!selectedTemplate, 'W:', currentCanvasWidth, 'H:', currentCanvasHeight);
-        return null; // This IIFE returns null, so it doesn't render anything
-      })()}
       {isPreviewModalOpen && selectedTemplate && currentCanvasWidth > 0 && currentCanvasHeight > 0 && (
         <PreviewModal
           isOpen={isPreviewModalOpen}
@@ -278,7 +269,7 @@ export default function CreatePage() {
       {process.env.NODE_ENV === 'development' && (
         <DevProModeToggle 
           isDevelopmentProModeActive={false} 
-          onToggle={() => console.log('Toggle development pro mode')} 
+          onToggle={() => {}} 
         />
       )}
     </div>

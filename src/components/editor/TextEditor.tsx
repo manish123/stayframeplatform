@@ -19,7 +19,6 @@ export default function TextEditor({ initialContent = '', onChange, className = 
 
   const handleToolbarClick = (action: string) => {
     // Placeholder for toolbar actions like bold, italic, etc.
-    console.log(`Toolbar action: ${action}`);
     // Implementation would depend on a rich text editor library like Quill or Draft.js
   };
 

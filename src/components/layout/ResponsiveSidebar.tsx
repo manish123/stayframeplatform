@@ -36,8 +36,6 @@ export function ResponsiveSidebar({
   onTouchMove,
   onTouchEnd,
 }: ResponsiveSidebarProps) {
-  console.log(`[ResponsiveSidebar.tsx] Rendering ResponsiveSidebar: ${position}, isOpen: ${isOpen}`);
-
   // Use a media query for desktop vs mobile (or similar logic as in QuoteGeneratorNewV2)
   // For simplicity, let's assume `isOpen` handles desktop visibility correctly now.
   const isMobileView = typeof window !== 'undefined' && window.innerWidth < 1024; // Example, match your breakpoint
