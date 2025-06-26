@@ -8,6 +8,12 @@ import Link from 'next/link';
 
 const knowledgeHubItems = [
   {
+    title: 'The Content Creator\'s Journey',
+    description: 'Navigate the six essential stages of social media success, from discovery to legacy building, with strategic insights for each phase of your creator journey.',
+    icon: <MessageSquare className="h-6 w-6 text-purple-500" />,
+    slug: 'creator-lifecycle-article',
+  },
+  {
     title: 'The Psychology of Viral Quotes',
     description: 'Unlock the emotional triggers and storytelling techniques that make quotes resonate deeply and inspire immediate sharing across communities.',
     icon: <MessageSquare className="h-6 w-6 text-primary" />,
