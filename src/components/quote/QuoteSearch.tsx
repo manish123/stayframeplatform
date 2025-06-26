@@ -73,7 +73,7 @@ export function QuoteSearch({
           size="sm"
           onClick={handleRefresh}
           disabled={loading}
-          className="text-gray-500 hover:text-gray-700"
+          className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
         >
           <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -81,7 +81,7 @@ export function QuoteSearch({
       </div>
       
       {error && (
-        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+        <div className="p-3 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/10 rounded-md">
           {error}
         </div>
       )}
@@ -93,13 +93,13 @@ export function QuoteSearch({
             onClick={() => handleQuoteClick(quote)}
             className={`p-3 rounded-md cursor-pointer transition-colors ${
               selectedQuoteId === quote.id
-                ? 'bg-blue-50 border border-blue-200'
-                : 'hover:bg-gray-50 border border-transparent'
+                ? 'bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800'
+                : 'hover:bg-gray-50 dark:hover:bg-gray-800/50 border border-transparent hover:border-gray-200 dark:hover:border-gray-700'
             }`}
           >
-            <p className="text-sm text-gray-800">"{quote.quote}"</p>
+            <p className="text-sm text-gray-800 dark:text-gray-200">"{quote.quote}"</p>
             {quote.theme && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Theme: {quote.theme}
               </p>
             )}
@@ -108,13 +108,13 @@ export function QuoteSearch({
         
         {loading && quotes.length === 0 && (
           <div className="flex justify-center p-4">
-            <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
+            <Loader2 className="h-5 w-5 animate-spin text-gray-500 dark:text-gray-400" />
           </div>
         )}
         
         {!loading && quotes.length === 0 && !error && (
-          <div className="text-center p-6 border-2 border-dashed border-gray-200 rounded-lg">
-            <p className="text-sm text-gray-500">
+          <div className="text-center p-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {theme 
                 ? `No quotes found for "${theme}" theme. Try another theme.`
                 : 'Select a theme to see quotes.'}
