@@ -8,6 +8,12 @@ import Link from 'next/link';
 
 const knowledgeHubItems = [
   {
+    title: 'Social Media Content Economy',
+    description: 'Master the creator economy with strategies for creating viral content, growing your audience, and monetizing your influence using Stayframe\'s powerful tools.',
+    icon: <MessageSquare className="h-6 w-6 text-blue-600" />,
+    slug: 'Social-Media-Content-Economy',
+  },
+  {
     title: 'The Content Creator\'s Journey',
     description: 'Navigate the six essential stages of social media success, from discovery to legacy building, with strategic insights for each phase of your creator journey.',
     icon: <MessageSquare className="h-6 w-6 text-purple-500" />,
